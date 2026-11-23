@@ -1,0 +1,16 @@
+Key issues found and targeted improvements
+- Labs gated IV therapy: The original model forces all labs (leucocytes, CRP, optional lactate) to finish before any IV therapy starts, and then sequences IV liquid before IV antibiotics. This slows time-to-antibiotics, a critical KPI in sepsis.
+- Lactic acid optional, CRP mandatory: In early sepsis management, lactate is more decision-critical than CRP. Making CRP mandatory can add work without informing immediate treatment; making lactate optional risks missing severity assessment.
+- Risk of wrong antibiotics: There is no explicit safety/dosing/allergy check before administering IV antibiotics, increasing risk of inappropriate or unsafe treatment.
+- Nested partial orders: The prior model nests partial orders, complicating the dependency picture and risking unintended ordering constraints.
+
+What changed and why (mapped to goals)
+- Parallelize labs and treatment to cut delay: After ER Sepsis Triage, the sepsis bundle now runs with full concurrency by default. Leucocytes, LacticAcid, optional CRP, and IV Liquid can start immediately and independently. IV Antibiotics no longer waits for labs or fluids, only for a safety check. This shortens the critical path to antibiotics, reducing overall process execution time.
+- Make LacticAcid mandatory and CRP optional: Lactate is executed for all suspected sepsis cases, ensuring severity assessment without delaying therapy because it is concurrent. CRP is made optional (via xor) to avoid unnecessary, non-urgent testing when time-critical actions are underway. This combination reduces time and avoids non-value-adding tasks.
+- Add Antibiotic Safety Check before IV Antibiotics: A dedicated “Antibiotic Safety Check” must precede antibiotics. This reduces wrong treatments (e.g., allergy interactions, dosing/renal issues, drug selection mismatch) while not delaying care because the check runs in parallel with fluids and lab draws.
+- Keep an explicit xor after ER Sepsis Triage: The entire sepsis bundle is behind an exclusive choice following ER Sepsis Triage, so non-sepsis patients skip antibiotics and sepsis-specific labs, decreasing wrong treatments.
+- Flatten dependencies (no nested partial orders): The sepsis bundle is modeled as a single partial order with only the necessary edge (Safety Check -> IV Antibiotics). This removes artificial sequencing and clarifies concurrency, helping both speed and correctness.
+
+Expected impact
+- Reduced time to antibiotics: No longer waiting for labs or fluids before starting antibiotics (only a concurrent safety check), removing two blockers from the critical path.
+- Fewer wrong treatments: Safety check reduces inappropriate antibiotic administration; xor choice based on sepsis triage prevents antibiotics for non-sepsis cases; optional CRP avoids unnecessary testing that can distract and delay.

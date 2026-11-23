@@ -1,0 +1,9 @@
+ The original process model for ER treatment involves sequential and concurrent activities related to registration, triage, and various medical tests and treatments. To achieve the goal of decreasing wrong treatments, several improvements can be proposed:
+
+1. Validate ER Triage Outcomes: Currently, ER Triage is followed immediately by ER Sepsis Triage without any validation step. Introducing a validation step after ER Triage ensures that the triage outcomes are correctly assessed before proceeding. This reduces the risk of erroneous diagnoses that could lead to wrong treatments.
+
+2. Synchronize across Related Tests: Ensure that the tests (Leucocytes, CRP, LacticAcid) lead to consistent results and are not skipped unnecessarily. This can be done by making test execution paths more structured. We will order our partial process such that both Leucocytes and CRP happen before any optional LacticAcid, making results more reliable.
+
+3. Confirm Treatment Before Execution: Add a confirmation step before administering IV Liquid and IV Antibiotics. This ensures that treatments are appropriate for current diagnoses, decreasing the chance of wrong treatments.
+
+The improvements aim for better validation and synchronization across treatment steps, which collectively will reduce the likelihood of incorrect treatments. 

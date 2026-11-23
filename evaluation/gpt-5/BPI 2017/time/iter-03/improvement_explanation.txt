@@ -1,0 +1,11 @@
+Goal: reduce total execution time by removing unnecessary waiting and rework while preserving feasible sequencing.
+
+Key improvements and why they speed up the process:
+- Parallelize independent work: Start W_Complete application immediately after A_Create Application, and run it in parallel with lead handling and concept/acceptance/offer preparation. This removes idle time between phases and shortens the critical path.
+- Flatten nested rework loops: Removed the nested loop structures that tied W_Complete application to the offer/concept path and that re-triggered call rounds after each resolution. This eliminates redundant re-entrance into earlier stages.
+- Make follow-ups skippable and lightweight: Model W_Call after offers as a skippable self-loop (0..n) that starts after O_Sent. If no follow-ups are needed, the process does not spend time on them.
+- Make lead handling skippable: Change W_Handle leads to a 0..n self-loop so that cases with no lead work avoid an unnecessary iteration, reducing case cycle time.
+- Decouple finalization from offer calls: Keep a single exit via xor(A_Complete, A_Cancelled→O_Cancelled), gated only by completion of application work. This allows early completion/cancellation without waiting for offer-related activities when they are not needed, shrinking throughput time in many cases.
+- Preserve essential business logic: Maintain A_Accepted → O_Create Offer → O_Created → O_Sent order; ensure A_Concept (if executed) precedes A_Accepted; and ensure completion (A_Complete) happens only after W_Complete application is done.
+
+Net effect: fewer sequential bottlenecks, no forced additional loop iterations after decisions, and more concurrent execution. This shortens the critical path and reduces average process execution time without compromising feasibility.

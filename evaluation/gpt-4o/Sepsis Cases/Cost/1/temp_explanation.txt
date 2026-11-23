@@ -1,0 +1,11 @@
+ The current POWL process model represents an emergency room (ER) workflow with several diagnostic and treatment activities. To achieve the improvement goal of reducing process execution cost, several modifications can be proposed:
+
+1. **Optional Activities**: Some diagnostic tests may not always be necessary for every patient. By making certain tests optional or conditional based on initial triage results, we can save both time and resources. The activity "ER Sepsis Triage" could help identify patients who need less extensive testing.
+
+2. **Streamline Concurrent Processes**: The activities "Leucocytes", "CRP", and "LacticAcid" are modeled to run concurrently but may not require that. If certain tests have dependencies or can follow a hierarchical decision-making process, then combining or sequencing these tests could reduce unnecessary test repetitions and associated costs.
+
+3. **Skip Redundant Processes**: The concurrent partial order model `(subprocess_2, subprocess_3)` allows activities to execute concurrently. By revisiting activities after ER triage results, we can skip unnecessary procedures or paths, reducing costs.
+
+4. **Improve Test Order**: Optimizing the order of testing based on likelihood or diagnostic importance can reduce wasteful tests. For instance, instead of running all tests simultaneously, an approach based on sequential procedures could cut down on redundant tests if a critical marker is identified early.
+
+These improvements will contribute to cost reductions by lessening unnecessary activity execution, improving resource allocation, and enabling decision-based activity completion. 

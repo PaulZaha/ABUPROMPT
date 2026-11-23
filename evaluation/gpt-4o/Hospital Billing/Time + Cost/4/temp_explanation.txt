@@ -1,0 +1,9 @@
+ The given process model starts with the 'NEW' activity and includes a pathway to delete or continue with a subprocess that incorporates both loops and optional activities. To reduce process execution time, paths that are unnecessary or can execute concurrently should be optimized. The process currently involves optional deletion, changes, and billing execution, which may add redundancy and delay. Additionally, activities such as 'CHANGE DIAGN' and 'BILLED' are optional and the subprocess lacks concurrency where possible. 
+
+By restructuring the model with increased concurrency and removing unnecessary choice structures, the execution can be sped up. Similarly, minimizing redundancies through concurrency can reduce the cost due to lower resource utilization. Proposition includes the following:
+
+1. Merge the `CHANGE DIAGN` task directly with the potential release and code activities into a concurrent subprocess, allowing parallel execution, thereby reducing bottlenecks.
+2. Remove unnecessary optional paths by ensuring essential activities directly follow one another, eliminating choice structures that contribute to delays.
+3. Direct concurrency for billing whenever it's possible with other subprocesses.
+
+These improvements leverage concurrent task execution for time efficiency and reduce cost by minimizing idle periods and redundant task pathways. 

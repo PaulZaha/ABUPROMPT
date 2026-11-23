@@ -1,0 +1,7 @@
+Key improvements and how they meet the goals:
+- Introduced a Sepsis Screening (qSOFA/SIRS) gate after ER Sepsis Triage and modeled an XOR between a low-intensity Observation & Reassessment path and a Sepsis workup path. This prevents unnecessary labs and antibiotics for low-risk patients, directly reducing execution cost and decreasing wrong treatments.
+- In the Sepsis workup branch, kept Leucocytes and CRP in parallel and made LacticAcid optional, so high-cost testing is performed only when clinically warranted. This reduces cost while preserving diagnostic value.
+- Enforced that Blood Cultures are drawn before IV Antibiotics (via partial order dependency) without forcing a wait for culture results, aligning with best practice to reduce inappropriate antibiotic selection while preserving timeliness.
+- Added an Antibiotic Indication Review step and an Antibiotic Allergy & Contraindication Check before IV Antibiotics. These low-cost checks gate therapy and prevent wrong antibiotic administration, avoiding adverse events and downstream rework costs.
+- Kept IV Liquid optional and concurrent with diagnostics to allow rapid hemodynamic support when needed without mandating it for all, balancing appropriateness and cost.
+Feasibility: All additions are standard clinical steps commonly implemented via triage protocols and EHR order sets/checklists, requiring minimal workflow changes while providing strong guardrails against overtreatment and unnecessary testing.

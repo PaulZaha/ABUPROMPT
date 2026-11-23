@@ -1,0 +1,13 @@
+Key issues in the original model that drive cost and harm external quality: (1) heavy optionality allows skipping core controls (RELEASE, CODE OK, BILLED), (2) FIN can occur concurrently with CODE OK/RELEASE, enabling premature finalization, and (3) BILLED is optional and can happen without validated coding, leading to rework, write-offs, and poor stakeholder experience. The model also allowed a full skip after NEW, creating orphaned records and inconsistent outcomes.
+
+Targeted improvements:
+- Introduce a controlled rework loop around coding: loop(CODE OK, CHANGE DIAGN) ensures CODE OK runs at least once and is re-run only when a diagnosis change is made. This reduces unnecessary rework and prevents proceeding with unvalidated codes, improving external quality.
+- Make RELEASE and CODE OK mandatory and sequential before FIN and BILLED: RELEASE -> coding_loop -> FIN -> BILLED. This removes risky concurrency, gating progression on code validation and finalization, which improves accuracy and customer-facing quality (correct, timely billing).
+- Remove the global None/skip path after NEW: after NEW, cases either proceed through the standardized process or are CLEANLY deleted early via DELETE. Early DELETE keeps costs down by avoiding downstream work on invalid/duplicated records while maintaining clear outcomes for external stakeholders.
+- Make BILLED mandatory after FIN in the main path to eliminate revenue leakage and ensure consistent completion of billable cases.
+
+How this achieves the goals:
+- Reduced execution cost by preventing downstream rework (mandatory CODE OK before FIN/BILLED), eliminating orphan cases (no skip), and enabling early exit for invalid records (DELETE immediately after NEW).
+- Improved external quality by enforcing correct sequencing and validation (CODE OK loop) before finalization and billing, resulting in accurate claims and predictable outcomes for patients/payers.
+
+These changes reflect realistic operational controls—coders already perform CODE OK and sometimes CHANGE DIAGN; the loop formalizes that pattern. RELEASE remains a prerequisite for coding, and FIN/BILLED follow as standardized, quality-assured steps.

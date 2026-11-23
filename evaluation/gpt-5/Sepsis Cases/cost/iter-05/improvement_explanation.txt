@@ -1,0 +1,15 @@
+Goal: reduce process execution cost while keeping sepsis safety gates. Key cost drivers in the original model were (a) two separate triage steps, (b) routinely ordering multiple labs (CRP + Leucocytes) even when not strictly indicated, and (c) co-administering both IV fluids and IV antibiotics whenever the IV path was chosen. Improvements and their cost impact:
+
+- Consolidate triage: Merge ER Triage and ER Sepsis Triage into a single activity (ER Triage & Sepsis Screening). This eliminates a duplicate handoff and nurse assessment, reducing labor cost and avoiding rework.
+- Reduce default lab utilization: Make CRP optional instead of mandatory. CRP is often not essential for immediate sepsis decisions; skipping it by default reduces lab cost and consumables. Lactic acid remains optional (only when indicated by screening), preserving safety but avoiding routine cost.
+- Decouple treatments: Make IV Liquid and IV Antibiotics independently optional, with a precedence edge that enforces IV Liquid before IV Antibiotics only if both are chosen. This prevents unnecessary co-administration and material cost while preserving clinical order when both are used.
+- Add a cost-saving bypass: Provide a direct antibiotics path from screening for high-certainty cases (e.g., clear clinical sepsis) that omits labs entirely. This saves lab costs in those cases without constraining clinicians (and also avoids delays).
+- Avoid nested partial orders: Flattened the ordering of labs and treatments into a single partial order to keep the model simpler and less error-prone.
+
+Cost effect summary:
+- Fewer staff touches (one triage instead of two) reduce labor cost and handoff overhead.
+- Significant reduction in lab spend by making CRP non-routine and lactic acid conditional; also enabling a path with antibiotics-only when appropriate.
+- Lower medication/consumable cost because fluids and antibiotics are no longer bundled by default.
+- The structure still allows skipping all post-triage work for low-risk patients, preventing any unnecessary cost.
+
+The updated POWL model implements these changes while keeping clear clinical precedence where needed and maintaining flexibility for different risk profiles.

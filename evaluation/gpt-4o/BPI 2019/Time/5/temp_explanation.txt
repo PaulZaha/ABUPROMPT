@@ -1,0 +1,11 @@
+ To reduce the overall process execution time, several improvements to the given business process can be made. First, we can streamline the subprocesses wherever unnecessary optional steps slow down the process. Specifically, removing some redundant optional steps and enabling some activities to occur concurrently can help reduce the time. 
+
+1. **Remove Optional Step for Order Confirmation**: In the subprocess `subprocess_0`, receiving order confirmation is an optional step that, when skipped, can improve the process execution time. We will change it so that this step must occur.
+
+2. **Concurrent Execution of Goods Receipt and Invoice Creation**: Instead of having the recording of goods receipt (a sequential dependency) come after vendor creates an invoice, they can occur concurrently to optimize time. Goods receipt does not need to wait for invoice creation, allowing both activities to progress independently. This means subprocess_3 must be altered to remove sequential dependency and allow these two actions to happen simultaneously.
+
+3. **Make Payment Block Removal Mandatory**: In subprocess_2, remove payment block was optional. Making it mandatory means no potential blockage or delay before clearing the invoice. This ensures a smoother and quicker completion of tasks.
+
+4. **Simplify Final Integration**: Reorganizing the partial order to show clear mandatory sequential dependencies enhances clarity that there should be no optional skips, thereby improving overall efficiency.
+
+With these improvements, the process execution time will be reduced due to elimination of optional steps and better concurrency management. 

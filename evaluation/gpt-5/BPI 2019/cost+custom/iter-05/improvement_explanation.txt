@@ -1,0 +1,10 @@
+Key improvements and how they meet the goals:
+- Add an automated duplicate check before any PO creation. The process now always starts with Check for Duplicate Order. We then branch using an exclusive choice: either consolidate/link the request to an existing PO (ending the flow early) or proceed with a new PO. This directly prevents duplicate orders and avoids all downstream processing costs when a request is a duplicate.
+- Early exit path for duplicates. The Consolidate with Existing Order branch terminates the instance early, eliminating unnecessary activities (order confirmation handling, goods receipt, invoice processing), which reduces execution cost.
+- Correct and tighten the invoice clearing sequence. In the original model, Clear Invoice could be reached without Record Invoice Receipt when Remove Payment Block was skipped. The invoice-processing sub-process now has explicit dependencies: Record Invoice Receipt -> Clear Invoice and Remove Payment Block (optional) -> Clear Invoice. This prevents erroneous early clearing and the rework it causes, reducing cost.
+- Gate invoice processing until after goods receipt. The optional invoice-processing group only starts after Record Goods Receipt (and, if applicable, the vendor’s invoice creation step). This ensures we do not spend effort processing invoices before confirming receipt, reducing exception handling and associated costs.
+- Preserve necessary concurrency and optionality. Receive Order Confirmation remains optional and independent; Vendor creates invoice is optional and may run in parallel after PO creation. The model keeps a clean, flattened normal path while avoiding nested partial orders as children of other partial orders, improving maintainability and clarity.
+
+Feasibility notes:
+- Duplicate detection can be automated in the ERP (match on vendor, material, quantity, delivery date, and open POs). Consolidation simply links the request to the existing PO, a standard operation.
+- Gating invoice processing to post-receipt and enforcing explicit dependencies are standard configuration choices in procure-to-pay setups and reduce manual intervention and payment errors.

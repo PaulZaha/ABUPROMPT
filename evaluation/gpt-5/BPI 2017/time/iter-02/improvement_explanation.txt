@@ -1,0 +1,16 @@
+Goal: reduce overall process execution time by eliminating unnecessary rework, enabling parallelism where safely possible, and avoiding forced activities on the critical path.
+
+Key improvements applied:
+- Removed nested rework loops that forced extra executions: Replaced the constructs loop(subprocess_4, subprocess_8) and loop(subprocess_1, subprocess_10) with a simpler, single-pass structure. Previously, completing/cancelling triggered another round of calls (do after redo), which unnecessarily extended cycle time. Now, calls are modeled independently and can be skipped when not needed.
+- Parallelized independent work to shorten the critical path: After A_Create Application, lead handling and application completion can start immediately in parallel (frontloading), rather than waiting for A_Submitted to finish. To keep governance intact, A_Accepted is gated by A_Submitted and the (optional) concept step.
+- Skippable self-loops for non-mandatory iterations: W_Handle leads and W_Call after offers are modeled as 0..n (loop(None, activity)) to avoid mandatory iterations when they are not needed, directly reducing average execution time.
+- Single-pass acceptance/offer chain: A_Concept remains optional, but once A_Accepted occurs, the offer creation/sending executes once in sequence without re-triggering application completion. This removes unnecessary back-and-forth and compresses throughput time.
+- Concurrency after offer sent: After O_Sent (mail and online), calling attempts (0..n) and the case closure (either completion or cancellation) can proceed concurrently, allowing earlier closure when the customer decides quickly, while still permitting calls if needed.
+- Flattened into one coherent partial order: Avoided partial-order-in-partial-order nesting to keep dependencies explicit and minimal, reducing inadvertent sequencing constraints that can slow execution.
+
+Why this reduces execution time:
+- Eliminates extra do-after-redo executions and redundant rework, removing entire iterations from typical cases.
+- Enables overlap of activities (lead handling, application completion, post-offer calls vs closure), shortening the critical path.
+- Makes non-essential loops optional, so fast-track cases skip them entirely.
+
+All changes are feasible in context: lead handling and application completion can start from case creation; acceptance is still contingent on submission and (if present) concept; offer chain remains ordered; and cancellation ensures O_Cancelled follows A_Cancelled.

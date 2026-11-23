@@ -1,0 +1,9 @@
+ Firstly, to reduce process execution cost, we should simplify and optimize the order processing workflow by removing unnecessary steps and automating wherever possible. One way to achieve this is by consolidating subprocesses that can be done simultaneously or sequentially without leaving any redundant choice models. Secondly, to prevent duplicate orders, we can introduce a verification step after creating a purchase order item, ensuring that the order is not a duplicate before proceeding. This verification step can be placed immediately after the creation of the purchase order item to detect and handle duplicates early in the process. These improvements streamline the process and mitigate the risk of additional costs related to processing duplicates.
+
+In terms of implementation:
+1. Add a verification step by creating a new activity immediately after the 'Create Purchase Order Item' step to check for duplicates.
+2. Refactor subprocesses to eliminate excessive usage of xor choices to make the workflow more cost-effective and consistent.
+3. Model concurrent execution where possible to optimize efficiency and execution cost.
+
+These changes ensure reduction in process execution cost by creating more streamlined and efficient subprocesses and steps. The addition of the verification step early in the process addresses and prevents duplicate orders from being fully processed.
+

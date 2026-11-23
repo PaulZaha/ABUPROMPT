@@ -1,0 +1,9 @@
+ 
+To improve the business process with the goals of reducing process execution time and reducing falsely sent fines, we can make several modifications. First, we need to directly address the falsely sent fines by ensuring an accurate validation step before sending the fine notices. This will likely involve adding a validation activity before the 'Send Fine' activity. Second, optimizing the process for execution time involves revisiting loops and conditional structures to make sure there are paths or options that minimize total process time. Specifically, we want to avoid unnecessary loops when a fine is incorrectly generated and caught early on.
+
+Improvements proposed:
+1. Add a 'Validate Fine' activity before 'Send Fine' to ensure only accurate fines are sent. This contributes to reducing falsely sent fines by acting as a checkpoint for verification.
+2. Alter subprocess_5 from optional execution of send_fine to a mandatory path for validation for all fines, ensuring all fines go through validation first. This contributes to ensuring fines get checked, and it reduces false positives, indirectly optimizing execution time by eliminating mistakes.
+3. Ensure that the loop for payment can happen concurrently with send_for_credit_collection, rather than being part of a decision-making structure that could sequentialize unnecessarily. Such concurrency can help reduce total execution time.
+
+These changes are feasible within the context of the process, as they target checkpoints and concurrency assumptions without altering core activities.

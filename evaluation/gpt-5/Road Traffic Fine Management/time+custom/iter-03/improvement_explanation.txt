@@ -1,0 +1,10 @@
+Targeted improvements and how they achieve the goals:
+- Add early, parallel quality controls to block wrong fines fast: Validate Fine Data, Check Violation Evidence, and Check Duplicate Fine now run concurrently right after Create Fine. This shortens cycle time by overlapping independent checks and reduces falsely sent fines by catching data/evidence issues and duplicates before any customer contact.
+- Introduce an explicit approval gate: Approve Fine consolidates the outcomes of the parallel checks. If the fine does not pass, the flow takes Cancel Fine, stopping the case before sending. This directly reduces falsely sent fines.
+- Remove unsafe optional paths: The original model allowed skipping Send Fine and even jumping to credit collection. The new design only allows sending after approval, and never routes to collection without first sending and allowing payment.
+- Correct post-send sequencing: Send Fine is followed by Insert Fine Notification (registry/update). Payment is only possible after sending, aligning execution with the real customer journey and avoiding confusion/rework.
+- Faster and cleaner payment handling: A loop with Send Payment Reminder enables non-blocking retries and accelerates collections without manual overhead. After the loop, an XOR directs either to Reconcile Payment (case closes) or to the overdue path.
+- Prevent false penalties: Add Penalty is only in the overdue path and preceded by Check Payment Overdue, ensuring penalties are applied only when the payment due date has actually passed.
+- Structural clarity: Flattened and streamlined control flow (fewer Nones/optionals, avoided nested partial orders at the top level) improves maintainability and reduces accidental misrouting, indirectly shortening execution time.
+
+Net effect: shorter average execution time (concurrency, fewer reworks, automated reminders) and significantly fewer falsely sent fines and penalties (robust validation, explicit cancel path, overdue check before penalty).

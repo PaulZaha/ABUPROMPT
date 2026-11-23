@@ -1,0 +1,12 @@
+ In the given business process model, several areas can be targeted to reduce process execution costs. I propose the following improvements: 
+
+1. **Eliminate Redundant Choice Options**: The current process includes activities or subprocesses that are set up as optional but add unnecessary complexity. For example, `subprocess_3` is an optional wrapper around `subprocess_1` which doesn't provide any additional paths, creating unnecessary decision points. Removing this helps streamline the process and reduce decision-making cost.
+
+2. **Merge Sequential Activities**: Activities often benefit from being merged when they logically follow one after another without conditional separation. This reduction in breaks between activities lessens transition costs. I propose merging `release` and `code_ok` as a combined activity since they model exclusive sequential dependent activities.
+
+3. **Reconsider Skippable Activities**: Here the `delete` activity is allowed to skip directly to `subprocess_5`, which might add to complexity and costs. To streamline, this should be reviewed in context to actually require the subprocess to execute or be combined logically if conditions allow.
+
+4. **Improve Concurrency**: Encouraging parallel execution where conditions allow can be beneficial. Making adjustments to areas lacking full concurrency could appreciably cut down exec times/idle costs.
+
+These improvements focus on making execution paths more straightforward, reducing unnecessary options and improving the concurrency model where pertinent, all working toward reducing actual execution costs.
+

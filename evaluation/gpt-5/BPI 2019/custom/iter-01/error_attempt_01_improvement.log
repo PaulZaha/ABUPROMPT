@@ -1,0 +1,14 @@
+Stage: improvement
+Traceback (most recent call last):
+  File "C:\Users\kecht\OneDrive - FIM Forschungsinstitut\Forschung\ABuPrOpt\Updated App\ABuPrOpt\evaluate.py", line 286, in run_single_iteration
+    _, improved_bpmn = improvement_generator.improve_process(input_bpmn, goal, iter_dir)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kecht\OneDrive - FIM Forschungsinstitut\Forschung\ABuPrOpt\Updated App\ABuPrOpt\generator\improvement_generator.py", line 101, in improve_process
+    improved_bpmn = execute_code(code, output_path)
+  File "C:\Users\kecht\OneDrive - FIM Forschungsinstitut\Forschung\ABuPrOpt\Updated App\ABuPrOpt\generator\improvement_generator.py", line 62, in execute_code
+    exec(code, context)
+    ~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 1
+    from generator.model_generator import ModelGenerator\n\ngen = ModelGenerator()\n\n# Existing activities\ncreate_purchase_order_item = gen.activity('Create Purchase Order Item')\nreceive_order_confirmation = gen.activity('Receive Order Confirmation')\nrecord_goods_receipt = gen.activity('Record Goods Receipt')\nvendor_creates_invoice = gen.activity('Vendor creates invoice')\nrecord_invoice_receipt = gen.activity('Record Invoice Receipt')\nremove_payment_block = gen.activity('Remove Payment Block')\nclear_invoice = gen.activity('Clear Invoice')\n\n# New activities to prevent duplicate orders\nregister_order_request = gen.activity('Register Order Request')\ncheck_existing_po = gen.activity('Check for Existing Purchase Order')\nassign_idempotency_key = gen.activity('Assign Idempotency Key')\nmark_request_duplicate = gen.activity('Mark Request as Duplicate')\n\n# Original optional/concurrent subprocesses\nsubprocess_0 = gen.xor(None, receive_order_confirmation)\nsubprocess_1 = gen.xor(None, vendor_creates_invoice)\nsubprocess_2 = gen.xor(None, remove_payment_block)\nsubprocess_3 = gen.partial_order(dependencies=[(record_goods_receipt,), (subprocess_1,)])\nsubprocess_4 = gen.partial_order(dependencies=[(record_invoice_receipt, subprocess_2), (subprocess_2, clear_invoice)])\nsubprocess_5 = gen.xor(None, subprocess_4)\n\n# Creation branch with idempotent guard and original downstream steps\ncreate_flow = gen.partial_order(dependencies=[\n    (assign_idempotency_key, create_purchase_order_item),\n    (create_purchase_order_item, subprocess_0),\n    (subprocess_0, subprocess_3),\n    (subprocess_3, subprocess_5),\n])\n\n# Decision: proceed to create or stop as duplicate\ndecision = gen.xor(create_flow, mark_request_duplicate)\n\n# Final model: pre-creation gate then decision\nfinal_model = gen.partial_order(dependencies=[\n    (register_order_request, check_existing_po),\n    (check_existing_po, decision),\n])
+                                                         ^
+SyntaxError: unexpected character after line continuation character

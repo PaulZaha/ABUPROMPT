@@ -1,0 +1,6 @@
+- Gate expensive activities behind the billing decision: Moved RELEASE and CODE OK to execute only if the billing branch is chosen. Non-billed cases now skip these tasks entirely, removing unnecessary labor and system costs.
+- Sequence instead of parallel: Changed RELEASE and CODE OK from parallel execution to a sequential dependency (CODE OK -> RELEASE). This reduces coordination overhead and handoff cost, and avoids doing RELEASE before issues are corrected.
+- Controlled rework loop: Introduced a do-redo loop where CODE OK is the do-part and CHANGE DIAGN is the redo. CHANGE DIAGN is now executed only when the code check identifies a need to correct the diagnosis, eliminating unnecessary changes and rework.
+- Finalize first: Enforced FIN before any billing-related work, ensuring stability of the case and avoiding repeated checks due to late changes.
+- Preserve early termination paths: Kept the early DELETE option and the ability to end after NEW, ensuring that no additional cost is incurred for cases that are cancelled early.
+- Overall cost impact: Fewer cases execute RELEASE/CODE OK; fewer unnecessary diagnosis changes; reduced rework and handoffs. The structure remains feasible operationally as it reflects policy changes (order-of-operations) rather than requiring new systems.

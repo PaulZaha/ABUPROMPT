@@ -1,0 +1,11 @@
+Key changes to reduce execution time and prevent duplicate orders:
+
+- Prevent duplicate orders up-front: Added an automated Check for Existing Order before any creation. Based on that, the process makes an exclusive choice between Link to Existing Order (when a duplicate or existing PO is detected) and Create Purchase Order Item. This avoids creating a new PO item when one already exists, directly addressing duplicate orders.
+- Parallelize downstream work to shorten the critical path: After the create/link decision, Receive Order Confirmation, Vendor creates invoice (external), Record Goods Receipt, and Record Invoice Receipt can all proceed in parallel where business logic allows. This removes the unnecessary serialization that previously forced invoice processing to wait for other steps, thereby reducing overall cycle time.
+- Correct and accelerate clearing logic: Clear Invoice now explicitly waits for both Record Goods Receipt and Record Invoice Receipt, and for Remove Payment Block when applicable. This allows earlier recording of the invoice (in parallel with GR) while ensuring payment is only cleared after both preconditions are satisfied, avoiding rework and delays.
+- Keep payment block removal lean and only when needed: Remove Payment Block remains optional and is positioned after invoice receipt, reducing unnecessary manual interventions and enabling automatic straight-through processing when no block exists.
+- Simpler, flatter structure for clarity and concurrency: The design uses a single top-level partial order with explicit dependencies, avoiding nested partial orders that can obscure or unintentionally constrain concurrency. This makes the intended parallelism clear and minimizes the critical path.
+
+How these changes meet the goals:
+- Prevent duplicate orders: The pre-creation check and the exclusive choice to link instead of create ensure a single PO item per request, eliminating duplicates introduced by re-entry or lack of visibility.
+- Reduce process execution time: By running order confirmation, vendor invoice creation, and invoice recording in parallel with goods receipt, and by enabling clearing as soon as both GR and invoice are available (with block removal only if needed), the critical path is shortened and waiting times are reduced.

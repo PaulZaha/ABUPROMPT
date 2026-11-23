@@ -1,0 +1,14 @@
+Goal: decrease wrong treatments. Key risks in the current model are (1) antibiotics or fluids administered without sufficient confirmation of sepsis, (2) missing safety checks (allergy, dosing), and (3) incomplete diagnostic data (e.g., optional lactate) leading to misclassification and inappropriate therapy. Improvements introduced below directly target these risks while keeping the flow feasible in the ED.
+
+What changed and why it reduces wrong treatments
+- Mandatory diagnostic confirmation before treatment: Introduced a dedicated Sepsis Confirmation activity that must follow both Physician Assessment and a complete lab panel (Leucocytes, CRP, and LacticAcid). LacticAcid is no longer optional. This reduces misclassification-driven wrong treatments.
+- Clear decision gate to avoid unnecessary treatment: After confirmation, an exclusive choice (xor) leads either to Treatment or to Observation & Reassessment. This prevents antibiotics/fluids when sepsis is not confirmed, reducing over-treatment.
+- Safety checks before antibiotics: Added Allergy/Contraindications Check and Weight Measurement with a Dose Calculation & Verification step. This reduces wrong-drug and wrong-dose errors.
+- Right antibiotic choice and timing of cultures: Added Antibiotic Selection per Guideline and enforced Blood Cultures before IV Antibiotics. This reduces inappropriate antibiotic selection and preserves culture integrity.
+- Optional pharmacist verification: Modeled as an optional step that, if performed, must precede IV Antibiotics, creating an additional safeguard without making it a hard bottleneck.
+- Preserved efficiency where safe: Labs are concurrent to avoid delays; IV Liquid remains part of the treatment path but is sequenced to occur before IV Antibiotics only when treatment is chosen, avoiding fluids for non-sepsis cases.
+
+Modeling rationale (POWL constructs)
+- partial_order enforces critical dependencies (e.g., cultures -> antibiotics, weight/guideline/dose checks -> antibiotics, and assessment/labs -> sepsis confirmation).
+- xor gates the Treatment vs Observation decision and makes Pharmacist Verification optional but precedence-bound when present.
+- Removing the previously optional entire sepsis pathway ensures that assessment and confirmation steps are not skipped, directly reducing wrong treatments.

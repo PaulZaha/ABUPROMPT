@@ -1,0 +1,15 @@
+Key improvements aimed at reducing execution time and cost:
+
+- Early triage, no “silent skip” after NEW: Replaced the post-NEW choice xor(None, delete, …) with a clear xor(delete, process). This forces an immediate decision to either cancel (DELETE) or proceed, avoiding ambiguous cases that otherwise stall or require later cleanup. This reduces waiting time and administrative overhead.
+- Conditional quality check tied to change: Modeled CHANGE DIAGN and CODE OK as a single optional package (xor(change→code_ok, None)). If a diagnosis change occurs, CODE OK is mandatory right after it; if there’s no change, we skip both. This eliminates unnecessary CODE OK runs when nothing changed, cutting effort and cycle time while preventing releases without verification when changes occur (avoids rework).
+- Correct sequencing with targeted concurrency: Enforced CODE OK before RELEASE to prevent defective releases and rework, while enabling FIN and BILLED to run concurrently after RELEASE. Billing no longer waits for administrative finalization (FIN), accelerating cash collection and shortening total cycle time without risking quality or compliance.
+- Streamlined structure (no nested partial orders as children of partial orders): The redesign uses XORs inside a partial order for clean dependencies and safe parallelization, making the model simpler and less error-prone.
+
+Impact:
+- Time: Parallel execution of FIN and (optional) BILLED after RELEASE shortens the critical path. Eliminating unnecessary CODE OK when no change occurs removes non-value-added work. Early triage avoids cases lingering without clear disposition.
+- Cost: Fewer QA checks when not needed, reduced rework from enforcing quality gates before release, and less administrative follow-up due to explicit triage reduce labor hours and handoffs.
+
+Assumptions for feasibility:
+- CODE OK is a QA gate only required when CHANGE DIAGN happens.
+- Billing can start after the release is done; administrative finalization (FIN) does not have to block billing.
+- DELETE is a valid endpoint for cancelled or invalid cases and should be decided immediately after NEW to minimize waste.

@@ -1,0 +1,10 @@
+Primary cost drivers in the as-is model are unbounded manual loops around W_Handle leads, W_Complete application, and W_Call after offers, plus mandatory operational cancellation work after A_Cancelled. The redesign removes these loops, scopes manual work more precisely, and flattens the flow to reduce repeated touches.
+
+What changed and why it reduces cost:
+- Eliminate rework loops: Removed the self-loops on W_Complete application and W_Call after offers and the outer loop that cycled between completion and offer stages. This prevents repeated manual effort and rework, directly lowering labor costs.
+- Make manual lead handling optional and single-pass: Replaced the 1..n loop on W_Handle leads with an optional single execution (xor). This avoids multiple manual touches for lead qualification and allows straight-through processing when not needed.
+- Scope follow-ups to relevant cases and cap at one: Moved W_Call after offers into the offer path and made it optional, executed at most once and only after O_Sent (mail and online). Cases with no offer incur zero follow-up calls, cutting telephony/time costs.
+- Reduce post-cancellation effort: Made O_Cancelled optional after A_Cancelled. Standard cancellations can auto-complete without extra back-office steps, while keeping the activity available for exceptions.
+- Flattened, single-pass main flow: Maintains the necessary ordering (A_Concept, when chosen, precedes the offer chain A_Accepted -> O_Create Offer -> O_Created -> O_Sent) but avoids costly redo cycles. Finalization (A_Complete or cancellation) occurs after the concept/offer stage (or their skips), preserving correctness.
+
+Expected impact: fewer manual touches and rework cycles, fewer outbound calls, and less back-office cancellation effort—reducing average handling time and direct execution cost per case, while keeping straight-through cases as cheap as possible.

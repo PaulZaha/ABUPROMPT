@@ -1,0 +1,15 @@
+ The original process contains multiple loops and optional subprocesses which may contribute to increased execution time and cost. In order to reduce process execution time and cost, the following improvements are proposed: 
+
+1. **Combine Activities with Similar Tasks:** Subprocesses handling similar tasks can be combined or streamlined. For example, handling leads and completing applications are related and can be better streamlined into a single subprocess which reduces the time spent in loops.
+
+2. **Reduce Optional Processes:** Where optional processes are present, consider removing unnecessary optional tasks that do not directly contribute to the process outcome. This can reduce both execution time and cost.
+
+3. **Optimize Loop Structures:** Examine loop structures and reduce iterations where possible. Where a redo option is set to `None`, evaluate if repeated execution actually contributes to the process goals.
+
+4. **Identify Unnecessary Sequential Dependencies:** Review the partial order dependencies. Combining activities that logically follow each other without dependencies can reduce time delays.
+
+Implementation:
+- The optional `subprocess_6` is skipped as it does not add value when it's optional. 
+- The loop of `subprocess_0` is optimized by combining it with `subprocess_1` to streamline lead handling and application completion. 
+- The loops in `subprocess_4` and `subprocess_11` are removed to streamline offer finalization and cancellation steps.
+- The `subprocess_5` directly executes followed by `subprocess_8`.

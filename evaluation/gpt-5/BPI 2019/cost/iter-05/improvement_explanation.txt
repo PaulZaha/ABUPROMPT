@@ -1,0 +1,6 @@
+Targeted cost-reduction changes applied to the Procure-to-Pay model:
+- Introduced a straight-through processing (STP) path: Auto-match and Clear Invoice. When PO, GR, and invoice data match, this path bypasses manual Record Invoice Receipt, Remove Payment Block, and manual Clear Invoice, cutting Accounts Payable labor and exception-handling costs.
+- Gated invoice processing to start only after both Goods Receipt and the vendor-invoice event are available. This reduces premature invoice handling, mismatches, and payment blocks, thereby lowering rework and escalation costs.
+- Parallelized Receive Order Confirmation with post-PO activities so it no longer delays Goods Receipt or invoice processing. This eliminates unnecessary waiting and coordination overhead, reducing execution cost.
+- Flattened the flow to avoid nested partial orders in the main orchestration, improving clarity and reducing orchestration overhead, while keeping Remove Payment Block strictly optional and contained within the manual path.
+Overall, these changes reduce manual touches, prevent avoidable exception work, and streamline AP processing to lower end-to-end execution cost.

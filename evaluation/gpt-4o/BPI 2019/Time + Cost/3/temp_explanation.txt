@@ -1,0 +1,6 @@
+ The given process involves activities related to the purchasing lifecycle from the creation of a purchase order item to the clearing of the invoice. To achieve the improvement goals of reducing execution time and execution cost, we can analyze the process flows and optional paths. The "Receive Order Confirmation", "Vendor creates invoice", "Remove Payment Block", and subprocess_4 activities are optional and executed potentially based on certain business rules, which can add variability and wait times in the overall process. To streamline execution time and cost, we can reduce the optional nature of subprocesses. We can combine recording the invoice receipt with receiving the order confirmation into a single subprocess to avoid excessive optional flows and parallelize recording goods receipt with invoice receipt for concurrency.
+
+1. Merge subprocess_0 (order confirmation) and the recording of invoice receipt into a concurrent execution with goods receipt to eliminate gaps in communication.
+2. Ensure that invoice receipt and clear invoice are treated as independent, concurrent activities to speed up execution rather than following optional paths.
+
+These changes will streamline the overall process by reducing the optional nature of subprocesses, minimizing waiting times, and promoting parallel execution which contributes to reduced execution time and cost. 

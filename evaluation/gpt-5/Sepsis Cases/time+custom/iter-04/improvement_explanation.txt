@@ -1,0 +1,13 @@
+Key issues found in the original model and targeted improvements:
+- Problem: Entire diagnostic/treatment block after ER Sepsis Triage was optional, enabling both under-treatment and unnecessary treatment. Improvement: Introduced an explicit XOR decision after ER Sepsis Triage between a Sepsis Bundle path and a No-Sepsis path. This makes treatment conditional on suspicion of sepsis, decreasing wrong treatments.
+- Problem: Tests had to complete before treatment (subprocess_2 -> subprocess_3), and IV Liquid had to precede IV Antibiotics. This delays time-critical antibiotics. Improvement: Removed the sequencing between tests and treatment and the sequence IV Liquid -> IV Antibiotics. Labs and treatment now run in parallel once IV access is available, reducing time to antibiotics and overall cycle time.
+- Problem: Lactic Acid (key severity indicator) was optional, which risks missed severe sepsis. Improvement: In the sepsis path, LacticAcid is mandatory alongside Leucocytes and CRP.
+- Problem: No explicit safety check before antibiotics (risk of allergy/wrong drug). Improvement: Added ABX Order & Allergy Check as a required predecessor to IV Antibiotics. This reduces wrong treatments without delaying therapy, since it runs in parallel with IV access and lab draws.
+- Problem: Fluid administration was rigid and blocked antibiotics. Improvement: Modeled IV Liquid as a skippable self-loop (0..n boluses) running in parallel. This tailors resuscitation to patient needs (decreasing wrong treatments) while not delaying antibiotics.
+- Execution time impact: Parallelizing IV access, lab draws (Leucocytes, CRP, LacticAcid, Blood Cultures), ABX order, and initiation of therapy removes unnecessary waits and eliminates the IV Liquid -> IV Antibiotics bottleneck. Door-to-antibiotics and total process time decrease.
+- Treatment accuracy impact: Conditional sepsis decision path, mandatory lactate in sepsis, and allergy check before antibiotics reduce wrong or unsafe treatments. Optional labs only in the non-sepsis path avoid unnecessary antibiotics.
+
+Modeling notes:
+- Sepsis Bundle is one partial order capturing all concurrency and required dependencies (no nested partial orders inside another partial order), with only safe prerequisites enforced (IV access and ABX order before IV antibiotics).
+- Non-sepsis path provides optional basic labs only, preventing unnecessary therapies.
+- Blood Cultures are drawn concurrently so they do not delay antibiotics, aligning with practice to get cultures before antibiotics when feasible but not at the expense of time-to-therapy.

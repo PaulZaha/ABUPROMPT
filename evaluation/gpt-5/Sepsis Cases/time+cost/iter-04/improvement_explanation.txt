@@ -1,0 +1,12 @@
+Key issues found and targeted improvements for time and cost reduction:
+- Remove gating of treatment behind labs: The original model forces IV therapy to wait until labs complete, delaying time-critical antibiotics. We parallelize labs and treatment immediately after Sepsis Triage to shorten the critical path and accelerate time-to-antibiotics.
+- Make non-critical tests optional: CRP is not essential for immediate sepsis decisions. Making CRP optional reduces lab cost and potential turnaround delays. Lactate remains optional (as in the original) to avoid unnecessary costs when clinically not indicated.
+- Make fluids conditional: IV fluids are not needed for all suspected sepsis cases (e.g., normotensive, euvolemic). Making fluids optional reduces cost and avoids unnecessary resource use while keeping antibiotics mandatory when sepsis is suspected.
+- Parallelize Registration with Triage: Use quick/lean registration in parallel with clinical triage so that care does not wait for full registration, reducing front-end delays.
+- Flatten nested orders: Replace the nested partial orders with a single concurrent block for labs and treatment to avoid implicit sequencing and simplify execution.
+
+Expected impact:
+- Time: Earlier antibiotics and concurrent execution of labs/treatment reduce overall cycle time and door-to-antibiotic time.
+- Cost: Optional CRP and optional fluids lower consumables and lab spend; avoiding unnecessary steps reduces staff time utilization.
+
+Assumptions for feasibility: Quick registration process is in place; antibiotics can start immediately after sepsis triage; fluids and antibiotics can be administered via Y-site or second line; labs are ordered as a bundled draw to minimize phlebotomy touches.

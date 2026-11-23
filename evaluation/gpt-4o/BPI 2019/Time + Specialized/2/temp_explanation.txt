@@ -1,0 +1,16 @@
+ The existing process model contains elements that can lead to increased execution time and duplicate orders. To address these issues:
+
+1. **Reduce Process Execution Time:**
+   - The process starts with optional steps, like receiving order confirmation, which can cause delays as it depends on vendor responsiveness. Converting some of these steps to a concurrent execution will allow overlapping of activities without waiting dependencies, thus speeding up the process execution.
+   - Converting the subprocess handling invoice sequential dependencies into a more parallel structure by allowing simultaneous execution wherever possible.
+   
+2. **Prevent Duplicate Orders:**
+   - The initial step `Create Purchase Order Item` is crucial. Ensuring there are checks before the potential loops that might lead to duplicate processing, such as adding conditions or constraints at the beginning, allowing for a validation step that checks for duplicates.
+   
+To implement these improvements, let's make the following updates to the code:
+- Use concurrency in subprocess_0 where possible.
+- Add an initial validation activity to ensure no duplicate orders before starting further activities.
+- Optimizing subprocess_5 by minimizing sequential dependencies and handling invoice-related tasks concurrently.
+
+These proposed improvements help reduce the execution time by ensuring activities can occur concurrently where appropriate, minimizing bottlenecks and potential idle times. Additionally, adding a duplicitous order check ensures the prevention of creating duplicate orders effectively.
+

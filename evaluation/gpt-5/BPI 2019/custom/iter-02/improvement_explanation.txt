@@ -1,0 +1,10 @@
+To prevent duplicate orders, I introduced a pre-creation gating and concurrency safeguard and encapsulated the downstream flow so it only runs when a new PO is legitimately created.
+
+Key improvements:
+- Place Creation Lock before duplicate checks: This creates a mutual-exclusion window on the requisition/need, preventing two users or integrations from creating the same PO item concurrently.
+- Mandatory Duplicate Check: A required activity verifies whether an equivalent PO item already exists (e.g., by supplier, material/service, PR line, cost center, and tolerance rules).
+- XOR decision (create vs. handle duplicate): If a potential duplicate is detected, the process follows a dedicated path to link to an existing PO or abort creation, and does not proceed to order execution steps. If no duplicate is found, the process continues with the original create-and-fulfill flow.
+- Encapsulation of the original flow inside the "create" branch: Order confirmation, goods receipt, invoice, and payment only occur when a new PO item is created, eliminating downstream noise due to suppressed duplicates.
+- Release Creation Lock after the decision: Ensures locks are always released in both branches, avoiding deadlocks.
+
+These changes are feasible operationally: the lock can be implemented at the requisition/PR-line level; the duplicate check can query existing open PO items; and the decision can be automated or require minimal human validation. The structure ensures duplicates are proactively prevented rather than cleaned up later.

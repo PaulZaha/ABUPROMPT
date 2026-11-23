@@ -1,0 +1,13 @@
+ The original process model contains redundancies and lacks certain communication activities that could enhance customer engagement. To reduce process execution costs, we should aim to minimize loops and eliminate unnecessary activities that do not add value. The loops involving `w_handle_leads` and `w_complete_application` can be simplified, and the process branches can be streamlined. Additionally, integrating direct customer communication points will ensure that customers are regularly informed about their application status, thereby achieving the second goal. 
+
+Here are my proposed improvements:
+
+1. **Minimize Loops**: The loop surrounding `w_handle_leads` can be made optional with an XOR structure since constant leading management might not be necessary once applications are already submitted. This can reduce repetitive operations and streamline the process, contributing to cost reduction.
+
+2. **Streamline Process Flow**: Simplify the creation and offer communication steps to integrate direct customer contacts. Instead of calling after offers, provide an activity that updates customers about the offer status. This provides real-time updates, ensuring customers are informed.
+
+3. **Integrate Customer Update Activity**: Add an activity named `O_UpdateCustomerStatus`. Place it after activities `o_created` and `o_sent_mail_and_online` to ensure customer engagement through each critical stage of the application process.
+
+4. **Decrease redundant paths**: Avoid unnecessary paths by refining conditions on subprocess choices, ensuring only valuable actions are allowed. This contributes to efficient use of resources, thus reducing costs.
+
+These improvements contribute to reducing process execution cost by ensuring efficient activity flow and resource usage while keeping the customer informed by integrating direct communication activities. 

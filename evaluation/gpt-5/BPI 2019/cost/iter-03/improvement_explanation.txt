@@ -1,0 +1,10 @@
+Targeted cost-reduction redesign and rationale:
+- Introduced ERS (Evaluated Receipt Settlement) path to eliminate invoice handling for eligible POs. After goods receipt, the process can directly clear the liability (self-billing) without recording an invoice or dealing with payment blocks. This removes the manual activities of Record Invoice Receipt and Remove Payment Block in those cases, cutting AP handling costs substantially.
+- Gated settlement activities after Goods Receipt. Invoice processing (if chosen) only starts after GR is posted. This enforces a 3-way-match discipline, which reduces blocked invoices and follow-up work (fewer manual unblocks), lowering exception-handling costs.
+- Isolated the vendor invoice creation to the invoicing branch only. We removed it from the pre-settlement stage to avoid unnecessary synchronization and checks before GR. This keeps the pre-settlement stage lean and reduces non-value-adding effort.
+- Preserved a skip branch for scenarios where no invoice is expected after GR (e.g., consignment or free-of-charge items). This avoids needless AP steps and associated costs.
+- Kept Receive Order Confirmation optional to prevent processing effort on low-risk/low-value orders, further reducing labor cost when appropriate.
+Implementation notes:
+- The ERS branch directly clears the invoice after GR (Clear Invoice) using a copy to keep branches independent.
+- The invoicing branch requires vendor invoice creation, then records the invoice, optionally removes a payment block, and clears the invoice.
+- Settlement choice is an XOR among ERS, traditional invoicing, and skip; it is positioned after GR to enforce the cost-saving gating logic.

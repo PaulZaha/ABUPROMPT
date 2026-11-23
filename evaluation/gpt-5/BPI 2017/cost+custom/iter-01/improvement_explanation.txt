@@ -1,0 +1,8 @@
+What I changed and why it helps:
+- Removed high-cost, error-prone self-loops for W_Handle leads and W_Complete application. These loops enabled unlimited rework, driving cost and delays. Both activities are now single-execution steps, which reduces rework and handling time.
+- Made A_Submitted mandatory (it was previously optional), and immediately trigger an automated acknowledgement (O_Notify Application Received). This keeps the customer informed early and reduces inbound status inquiries.
+- Ensured clear preconditions before offer creation: A_Accepted must follow W_Complete application and (if applicable) A_Concept. This eliminates premature offer work and rework cost.
+- Replaced the expensive, repeated W_Call after offers loop with a default low-cost, automated reminder loop (O_Send Reminder, 0..n) and an optional single manual call escalation. This cuts manual effort substantially while maintaining customer touchpoints. The call is modeled as optional and sequenced after reminders to be used only as needed.
+- Added closing notifications: O_Notify Application Completed and O_Notify Application Cancelled. Along with O_Sent (mail and online) for the offer, these updates proactively keep the customer informed at key milestones, improving experience and reducing follow-up calls.
+- Used partial order to allow beneficial concurrency: the submission acknowledgement is sent in parallel with internal lead handling; automated reminders can run without blocking the customer’s decision. This shortens cycle time with minimal cost.
+Net effect: fewer manual loops and calls, clearer sequencing to avoid rework, and proactive automated communications that keep the customer informed while lowering process execution cost.

@@ -1,0 +1,22 @@
+Key issues found and addressed
+- Optional care after sepsis triage: The original model allowed skipping the entire diagnostic/treatment bundle after ER Sepsis Triage, causing delays and under-treatment or inappropriate treatment.
+- Wrong sequencing delaying antibiotics: IV Antibiotics were forced to wait for IV Liquid, which is unnecessary and slows time-to-antibiotics.
+- Risk of wrong treatment: No check for antibiotic allergies or cultures-before-antibiotics; LacticAcid was optional, risking missed severity assessment.
+
+What changed (targeted redesign)
+1) Decision gating after ER Sepsis Triage
+- Introduced an XOR with two explicit branches: Sepsis suspected vs. not suspected.
+- This confines IV Antibiotics and IV Liquids to the sepsis branch only, preventing unnecessary treatments in non-septic patients and reducing wrong treatments.
+
+2) Sepsis bundle with maximum safe parallelism
+- Within the sepsis branch, Leucocytes, CRP, LacticAcid(1..n via self-loop), Blood Cultures, and IV Access run concurrently to compress elapsed time.
+- IV Antibiotics no longer waits for IV Liquids. Instead, IV Antibiotics depends only on IV Access, Blood Cultures (to ensure cultures-before-antibiotics), and an Antibiotic Allergy Check -> Protocol-based Selection chain. This both speeds up antibiotics and reduces wrong-drug administration.
+- IV Liquids are optional and depend only on IV Access, allowing early resuscitation when indicated without delaying antibiotics.
+
+3) Non-sepsis path streamlined
+- Retains Leucocytes and CRP; LacticAcid remains optional. No IV therapy or antibiotics on this path, decreasing wrong treatments and saving time/resources.
+
+How this meets the goals
+- Reduce execution time: Parallel labs/access/cultures; removal of unnecessary dependency (IV fluids before antibiotics); antibiotics can start as soon as access, cultures, and selection are done.
+- Decrease wrong treatments: Clear gating to the sepsis pathway, mandatory cultures-before-antibiotics, and allergy/protocol checks before antibiotic administration; non-septic patients avoid antibiotics/IV fluids.
+- Robustness: Mandatory and repeatable LacticAcid in the sepsis branch improves early detection and monitoring without blocking other steps.

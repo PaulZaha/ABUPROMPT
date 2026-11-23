@@ -1,0 +1,18 @@
+Stage: improvement
+Traceback (most recent call last):
+  File "C:\Users\kecht\OneDrive - FIM Forschungsinstitut\Forschung\ABuPrOpt\Updated App\ABuPrOpt\evaluate.py", line 286, in run_single_iteration
+    _, improved_bpmn = improvement_generator.improve_process(input_bpmn, goal, iter_dir)
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kecht\OneDrive - FIM Forschungsinstitut\Forschung\ABuPrOpt\Updated App\ABuPrOpt\generator\improvement_generator.py", line 101, in improve_process
+    improved_bpmn = execute_code(code, output_path)
+  File "C:\Users\kecht\OneDrive - FIM Forschungsinstitut\Forschung\ABuPrOpt\Updated App\ABuPrOpt\generator\improvement_generator.py", line 62, in execute_code
+    exec(code, context)
+    ~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 16, in <module>
+  File "C:\Users\kecht\OneDrive - FIM Forschungsinstitut\Forschung\ABuPrOpt\Updated App\ABuPrOpt\generator\model_generator.py", line 110, in partial_order
+    new_child = self.create_model(child, "'gen.partial_order'")
+  File "C:\Users\kecht\OneDrive - FIM Forschungsinstitut\Forschung\ABuPrOpt\Updated App\ABuPrOpt\generator\model_generator.py", line 68, in create_model
+    raise Exception(f"Ensure that"
+    ...<2 lines>...
+                    f" or partial_order) before! The error occured when trying to reuse a node of type {node_type}.")
+Exception: Ensure that each submodel is used uniquely! Avoid trying to reuse submodels that were used as children of other constructs (xor, loop, or partial_order) before! The error occured when trying to reuse a node of type Activity (Leucocytes).

@@ -1,0 +1,14 @@
+External quality suffers in the original model because essential quality gates are either optional or concurrent: CODE OK and RELEASE can occur in parallel, BILLED is optional, and the entire middle segment can be skipped via None paths. This enables premature releases and incomplete or incorrect external outputs (e.g., bills), increasing downstream errors and customer dissatisfaction. The improved model makes critical steps mandatory and ordered, and adds a quality gate with iterative correction where needed.
+
+Key improvements:
+- Removed the None path after NEW so each case is either explicitly DELETED or fully processed, preventing incomplete external outputs.
+- Made BILLED mandatory on the processing path (only non-deleted cases proceed to billing), ensuring consistent delivery of external outputs.
+- Enforced a strict sequence: FIN -> CODE OK -> QA REVIEW -> RELEASE -> BILLED. This prevents premature RELEASE and guarantees billing only after verified coding.
+- Introduced a loop that ties CHANGE DIAGN to the CODE OK + QA REVIEW cycle. If corrections are needed, CHANGE DIAGN triggers another round of CODE OK and QA REVIEW, raising accuracy and compliance of the released/billed output.
+
+How this improves external quality:
+- Mandatory validation (CODE OK) and QA REVIEW prior to RELEASE reduce errors and rework, improving the correctness of documents/invoices sent externally.
+- Eliminating optional skips and concurrency around critical checks ensures the external deliverable is complete and accurate.
+- The correction loop institutionalizes iterative quality improvement before anything is released externally, increasing reliability and customer satisfaction while reducing claim denials or external complaints.
+
+These changes are feasible because they primarily restructure existing activities, add a lightweight QA REVIEW gate, and formalize the iterative correction already implied by CHANGE DIAGN.

@@ -1,0 +1,8 @@
+What was changed and why
+- Capped expensive manual loops: Replaced the unbounded loops on W_Handle leads and W_Complete application with at-most-one rework. This eliminates runaway rework and directly reduces labor cost while still allowing one retry where it pays off.
+- Automated instead of manual follow-ups: Substituted the unbounded loop of W_Call after offers with low-cost automated reminders (up to two) and only one optional manual call if still needed. This preserves conversion while cutting handling cost.
+- Proactive customer communication: Added automated customer notifications at key points to keep customers informed without increasing manual workload: O_Submission Confirmation Sent (immediate receipt confirmation), O_Request Missing Info (before rework), O_Reminder Sent (post-offer), O_Status Update Sent (upon completion), and O_Cancellation Notice Sent (upon cancellation).
+- Structural cleanup for clarity and cycle-time: Made A_Submitted mandatory after creation (no optional skip) and allowed the submission confirmation to run in parallel with lead handling to avoid any delay. Kept concept and offer paths optional but correctly ordered.
+Impact on goals
+- Reduce process execution cost: Removes unbounded manual loops, limits manual calls, and shifts communication to automated tasks; reduces rework by structuring one controlled rework pass with clear triggers.
+- Keep customer informed: Ensures the customer receives timely updates at submission, when information is needed, after the offer is sent, and at finalization (complete/cancel), improving transparency with minimal effort.

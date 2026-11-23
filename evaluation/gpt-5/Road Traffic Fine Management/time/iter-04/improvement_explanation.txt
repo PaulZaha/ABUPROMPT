@@ -1,0 +1,11 @@
+To reduce end-to-end execution time, I removed unnecessary gating and enabled parallel execution where feasible, while making escalation faster once payment attempts fail.
+
+Key changes and their impact on execution time:
+- Made Send Fine mandatory and auto-triggered after Create Fine (removed optional XOR). This eliminates decision/wait time and ensures the debtor is informed immediately.
+- Ran Insert Fine Notification in parallel with Send Fine. This allows the fine to be visible in the system right away, reducing waiting before a payment can be made.
+- Started the payment process as soon as the fine is in the system by making Payment depend only on Insert Fine Notification (not on Send Fine). This enables earlier payment (e.g., via online portal) and shortens the critical path.
+- Replaced the raw self-loop on Payment with a structured loop that couples Payment (do) with Add penalty (redo). This automates penalty application between payment attempts, removing manual handoffs and delays between retries.
+- Sequenced escalation after the payment cycle via an optional XOR(None, Send for Credit Collection). This removes the earlier exclusive choice between Payment and Credit Collection that could stall resolution. Now escalation can occur immediately when payment attempts are exhausted, without extra decision points.
+- Flattened the model into a single partial order (no nested partial orders), clarifying concurrency and ensuring the engine can execute independent steps in parallel.
+
+Overall, the redesign shortens the critical path by parallelizing Send Fine with system publication, enabling earlier payments, automating penalty-driven retries, and minimizing handoffs and decision-induced idle time before escalation.

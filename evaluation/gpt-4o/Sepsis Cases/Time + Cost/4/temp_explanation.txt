@@ -1,0 +1,9 @@
+ For the given process, we can identify opportunities to streamline and parallelize tasks to reduce both execution time and cost:
+
+1. **Parallelization of Diagnostic Tests:** The subprocess_2 currently models concurrency for the leucocytes, CRP, and a conditionally executed lactic acid test. By ensuring these activities happen concurrently, we reduce the overall waiting time during diagnostics, contributing to faster execution.
+
+2. **Optimization of Treatment Administration:** The subprocess_1 involves a partial order for IV Liquid and IV Antibiotics, indicating they are administered sequentially. If clinically feasible, allowing these activities to run concurrently whenever possible rather than sequentially can cut down on process execution time significantly.
+
+3. **Sepsis Triage Trigger Logic:** Currently, subprocess_5 models an optional path post-sepsis triage. If diagnosing certain conditions triggers specific actions inherently (e.g., high CRP levels necessitating immediate IV antibiotics), incorporating these logical conditions can reduce unnecessary decisions and processing delays.
+
+By leveraging parallel execution and logical clinical dependencies, we aim to reduce both the execution time and the associated costs with reduced staff engagement in waiting. 

@@ -1,0 +1,10 @@
+ The original process model consists of multiple loops and optional subprocesses, which can lead to inefficiencies and increased execution costs. To reduce the process execution cost, I propose the following improvements:
+
+1. Remove excessive self-loops: Self-loops such as in `subprocess_0`, `subprocess_1`, `subprocess_4`, and `subprocess_12` can increase operational overhead by allowing repeated execution of activities, leading to increased costs. Consolidating these loops or ensuring activities within them are performed efficiently can help reduce costs.
+
+2. Simplify optional subprocesses: Optional subprocesses as seen in `subprocess_6` (submission handling) can incur costs from duplicated or redundant paths. It's more cost-effective to streamline submissions into a single, more direct workflow.
+
+3. Improve concurrency: Ensuring activities that can be done concurrently are explicitly modeled in `partial_order` can minimize wait times and resource idleness, indirectly reducing execution costs.
+
+By applying these modifications, the process will have fewer unnecessary repetitions, streamlined steps, and improved concurrency, resulting in lowered process execution costs.
+

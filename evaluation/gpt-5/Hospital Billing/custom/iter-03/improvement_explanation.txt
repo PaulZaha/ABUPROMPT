@@ -1,0 +1,8 @@
+To improve external quality (accuracy, consistency, and reliability of what reaches patients/insurers), the model was redesigned to enforce clear quality gates and remove risky concurrency/optionality that could lead to externally visible errors.
+
+Key changes and their quality impact:
+1) Mandatory coding validation before any external-facing step: CODE OK is now mandatory and placed in a loop with CHANGE DIAGN as the redo. This models real rework cycles: every time the diagnosis is changed, the codes are re-validated immediately afterward, ensuring the final output is correct before it is released or billed.
+2) Ordered, unambiguous sequence for external deliverables: After validated coding, the process now follows FIN -> RELEASE -> BILLED. This removes the previous concurrency between RELEASE and CODE OK and the optional BILLED step, ensuring the external recipient gets finalized, correct information and a consistent bill—key for perceived quality and compliance.
+3) Controlled deletion path with authorization: DELETE is now gated by a DELETE AUTH step to prevent accidental or unjustified deletions that could create external confusion or compliance issues. The silent skip option after NEW was removed to avoid cases where nothing happens after creation.
+
+These changes directly raise external quality by guaranteeing that any change triggers re-validation, by imposing a clear order on externally visible steps, and by adding a basic control on deletions. The redesign leverages existing activities, adds only one feasible governance step (DELETE AUTH), and uses POWL constructs (loop and partial_order) to model the quality gates without adding unnecessary complexity.

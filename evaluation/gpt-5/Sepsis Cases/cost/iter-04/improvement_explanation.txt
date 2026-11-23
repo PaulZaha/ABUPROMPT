@@ -1,0 +1,16 @@
+Key changes to reduce execution cost while keeping the process clinically safe and feasible:
+
+1) Replace separate Leucocytes and CRP activities with a single combined “CBC + CRP Panel” activity. This bundles orders and blood draw into one step, cutting duplicated venipuncture, labeling, specimen handling, and order-entry time — all material and labor cost drivers.
+
+2) Restrict Lactate measurement to the high-risk pathway only. Lactate is a valuable marker when sepsis likelihood is high, but routinely ordering it for moderate/low-risk patients drives unnecessary lab costs. We model this by including an optional lactate only in the path that also contains treatment.
+
+3) Make risk-based branching explicit via XOR after Sepsis Triage: None (skip further workup), Labs-only (combined CBC+CRP panel), or Labs + Treatment (CBC+CRP, optional lactate, followed by IV Liquid then IV Antibiotics). This removes nested/stacked optionals that can inadvertently lead to over-ordering, and it requires an explicit choice aligned to triage risk, preventing unnecessary tests and therapies for low-likelihood cases.
+
+4) Flatten partial orders to avoid partial-order-in-partial-order nesting. We combine dependencies in one partial order for the Labs + Treatment path (labs before IV liquid, liquid before antibiotics). This simplifies execution logic and reduces the chance of redundant or mis-sequenced steps that can add rework costs.
+
+Expected cost impact:
+- Low-risk patients often follow the None path, avoiding all downstream lab and treatment costs.
+- Moderate-risk patients incur one consolidated lab order instead of two separate tests; no lactate by default.
+- High-risk patients still receive full, timely care (labs, optional lactate, IV fluids, antibiotics) when clinically indicated.
+
+Overall, fewer activities are executed for non-severe cases, and lab/test consolidation reduces material and labor costs without compromising care for high-risk sepsis cases.

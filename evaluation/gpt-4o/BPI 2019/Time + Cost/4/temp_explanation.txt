@@ -1,0 +1,15 @@
+ To achieve the goals of reducing process execution time and cost, several improvements have been proposed for the given business process model:
+
+1. **Concurrency Enhancement**: 
+   - Allow 'Create Purchase Order Item' and 'Receive Order Confirmation' to occur concurrently. This change speeds up the process execution time by not requiring one step to be completed before the other can start if dependencies allow.
+   
+2. **Simplified Invoice Handling**:
+   - Eliminate unnecessary optional exclusivity in subprocesses related to invoice creation and payment block removal. Remove the XOR constructs where they are not needed, allowing more predictable and efficient handling of invoices. Specifically, making 'Vendor creates invoice' a mandatory step rather than optional improves engagement reliability with vendors, reducing delays and costs related to invoice handling.
+   
+3. **Parallel Processing Opportunities**:
+   - Enable 'Record Goods Receipt' and 'Record Invoice Receipt' to be handled in parallel, where logical dependencies permit. This improvement leverages parallel processing to reduce waiting times further, thus lowering overall time and potentially labor costs associated with handling each separately in sequence.
+   
+4. **Eliminate Unnecessary Steps**:
+   - Eliminate subprocesses that became redundant or overly complex due to other process optimizations. Specifically, the exclusivity around payment block removal is simplified by ensuring clear and direct dependencies where normally this may happen without conditional checks or redundancy.
+
+Each of these changes works towards reducing the process execution time by parallelizing tasks and removing bottlenecks. Furthermore, by simplifying and removing unnecessary options, the process becomes more streamlined, reducing the likelihood of errors and thus reducing costs associated with troubleshooting or handling extraordinary cases. 

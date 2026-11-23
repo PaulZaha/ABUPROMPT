@@ -1,0 +1,16 @@
+Objective: Reduce falsely sent fines by ensuring only validated and approved cases reach the Send Fine step and by preventing any downstream actions (payment/collections/penalties) for canceled/invalid cases.
+
+What was wrong in the original model
+- No pre-send validation/approval: Send Fine could occur without checks, leading to false positives (e.g., OCR errors, duplicate fines, recent payments, exemptions).
+- Post-send flows were reachable even if Send Fine was skipped, enabling payments/collections on potentially invalid cases.
+- Penalty handling could be triggered regardless of proper validation.
+
+Targeted improvements
+- Automated validation gate before any send: Added sequential prechecks that must complete before any decision to send can be made: Automated Validation, Check Duplicate, Sync Recent Payments, Check Permits/Exemptions. This directly cuts false sends by catching common error sources early.
+- Approval-only sending: Introduced an explicit Approve to Send activity. Send Fine is reachable only via an approval gate (either automatic approval or after manual review). This 4-eyes gate is a strong control that materially reduces false sends.
+- Manual review for flagged/high-risk cases: Added Manual Review (4-Eyes) path used when automated checks flag uncertainty; only after a human approval can the case be sent. Invalid cases are routed to Cancel Fine.
+- Evidence package preparation before sending: Generate Evidence Package and Insert Fine Notification are performed before Send Fine to ensure that the notice content and case record are complete and consistent, reducing errors in the final notice.
+- Containment of downstream actions: Payment, Send for Credit Collection, and Add penalty are now strictly inside the approved-send branches and only reachable after Send Fine. This prevents collections/penalties/payments on canceled or invalid fines.
+
+Why this reduces false sends
+- The process now enforces a mandatory validation and explicit approval gate prior to sending. Most false sends originate from missing/incorrect data, duplicates, recent payments, or exemptions—all covered by the prechecks and manual review. By moving send and all downstream steps behind these gates, the probability of any false notice going out is substantially reduced while keeping the redesign feasible in a municipal or corporate fine management context.

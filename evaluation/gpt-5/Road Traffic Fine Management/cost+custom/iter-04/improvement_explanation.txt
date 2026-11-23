@@ -1,0 +1,16 @@
+Key issues in the original model that drive cost and false fines: (1) fines can be sent without any validation or approval; (2) penalties can be added right after sending the fine; (3) credit collection can be triggered even before trying reminders or waiting for the due date; and (4) a self-loop on Payment allows unnecessary repeated processing. The redesigned model addresses these:
+
+- Add quality gates before sending a fine:
+  - Auto-Validate Fine Data performs automated checks (duplicate detection, evidence/data integrity, plate-owner match). This prevents most false fines at low cost.
+  - Manual Review (If Flagged) + Correct Fine Data are placed in an optional redo loop so only suspicious cases incur manual effort. This yields high precision with minimal added cost.
+  - Approve Fine For Sending is required to proceed; otherwise Cancel Fine ends the case. This stops falsely sent fines entirely when validation fails.
+- Move notification and timing to reduce unnecessary penalties/collections:
+  - Insert Fine Notification is sent after the fine is sent and before the due date to encourage voluntary payment (cheap nudge versus costly collection), cutting execution cost.
+  - Wait Until Due Date assures no premature penalties or escalations.
+  - Add penalty only occurs after the due date and only if no payment is received, preventing wrongful penalties.
+- Stage payment windows without an unbounded loop:
+  - Allow payment in three places: immediately after sending, before penalty (after reminder), and after penalty (before collection). This simplifies flow, avoids costly rework from an open payment loop, and still maximizes the chance to collect without external collection fees.
+- Defer and condition credit collection:
+  - Send for Credit Collection is only possible after penalty and only if still unpaid, reducing both cost (collection fees) and the risk of wrongly sending cases to collections.
+
+Result: fewer false fines due to pre-send validation and approval; lower execution cost via automated screening, fewer manual touches on clean cases, higher on-time payment through reminders, and minimized reliance on credit collection.

@@ -1,0 +1,7 @@
+ To reduce process execution time, several improvements can be made: 
+1. **Minimize Loops**: The current model features multiple self-loops for activities that do not inherently require repeated execution without explicit reason. Reducing or redesigning these can lessen unnecessary repetition and accelerate the overall process.
+2. **Concurrent Execution**: Wherever possible, enabling concurrent execution of activities rather than strict sequencing can reduce waiting times. For instance, the initial 'A_Submitted' step does not need to strictly wait for 'W_Handle Leads' to be completed, if potential overlaps can be made.
+3. **Optional Processes**: Activities or subprocesses that can be skipped or parallelized without affecting main outcomes should be reconsidered. For instance, 'W_Call after offers' can be made optional to allow moving forward without dependence on feedback, if permitted by the business context.
+
+By integrating these changes, the execution time can be significantly reduced by removing bottleneck loops, utilizing concurrency, and reframing optional activities to reduce dependencies.
+

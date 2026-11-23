@@ -1,0 +1,20 @@
+Goal: reduce overall execution time by removing unnecessary sequential waits and enabling earlier start/finish of independent tasks.
+
+What was slowing us down
+- CHANGE DIAGN was on the critical path before any of FIN/RELEASE/CODE OK could begin, forcing unnecessary waiting.
+- BILLED was forced to occur after the whole FIN/RELEASE/CODE OK block, adding an extra sequential step at the end even when billing could be decided earlier.
+- RELEASE and CODE OK were bundled together, which implicitly made billing wait for RELEASE too, although RELEASE is not a hard prerequisite for issuing an invoice.
+
+Improvements applied
+- Decoupled CHANGE DIAGN from the critical path: it is now optional and runs in parallel with FIN and the coding/release work. This turns a sequential dependency into concurrency, reducing elapsed time.
+- Split RELEASE from CODE OK: both are optional and can run independently. This allows us to make billing depend only on CODE OK, not on RELEASE.
+- Enabled early billing: created an optional branch that enforces CODE OK -> BILLED, and ran it in parallel with FIN and other optional work. Billing can now happen as soon as CODE OK completes, rather than waiting for FIN or RELEASE.
+- Flattened structure to a single parallel block for the process path, minimizing nested waits.
+
+Why this reduces execution time
+- The process completion time becomes the maximum of parallel tasks instead of the sum of sequential stages (especially removing the sequential Change Diagn → [FIN || Release || Code OK] → Billed chain). In particular, billing is no longer a tail activity after FIN/RELEASE, and CHANGE DIAGN no longer gates the start of other work.
+
+Feasibility notes
+- FIN remains independent; it can complete after billing without risking correctness.
+- Billing is conditioned on CODE OK, which reflects standard practice to invoice only after coding verification. RELEASE remains decoupled so it does not delay billing when not necessary.
+- DELETE/skip options remain unchanged at the top-level choice after NEW, preserving existing behaviors while accelerating the normal processing path.

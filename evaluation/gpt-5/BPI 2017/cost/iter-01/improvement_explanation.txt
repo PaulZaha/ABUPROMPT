@@ -1,0 +1,10 @@
+Key cost drivers in the original model were the three unbounded self-loops on W_Handle leads, W_Complete application, and W_Call after offers, plus the cyclic construct that repeatedly returned to earlier stages after completion/cancellation. These patterns create excessive manual iterations, rework, and coordination overhead. As process owner, I changed the model to cap or remove these loops and to avoid unnecessary steps:
+
+- Capped rework: W_Complete application is executed once, with at most one controlled rework using powl.copy() and an optional xor. This cuts repeated manual data chasing while still allowing one corrective cycle when needed.
+- Removed unbounded loops: Replaced the self-loops on W_Handle leads and W_Call after offers with optional single executions (xor(None, ...)). This prevents cost-heavy repeated outreach.
+- Gated the offer stage: Kept the entire acceptance/offer chain optional behind xor(None, offer_chain), so we only incur creation/sending costs for qualified cases.
+- Cheaper sending channel: Split O_Sent (mail and online) into an exclusive choice between O_Sent (online) and O_Sent (mail). This avoids double sending; online is cheaper and should be the default operational choice, using mail only when required.
+- Simplified end-state: Moved the completion/cancellation decision to a single exclusive choice at the end (xor(A_Complete, A_Cancelled -> O_Cancelled)), removing costly redo cycles.
+- Ensured logical sequencing: A_Submitted is now mandatory after creation; lead handling is optional and executed at most once; concept is optional and precedes the (optional) acceptance/offer chain; follow-up calling happens only when an offer was sent.
+
+These changes directly reduce execution cost by eliminating unbounded iterations, avoiding duplicate communications, and executing cost-intensive steps only when value is expected (qualified/accepted cases). They also reduce coordination overhead and resource time spent in rework and repeated outreach.

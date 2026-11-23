@@ -1,0 +1,9 @@
+Main issue in the as-is model: the process always starts with Create Purchase Order Item and there is no guard against creating a PO item when one already exists for the same requisition/material/vendor. In multi-user scenarios this can cause duplicates due to parallel handling and missing checks.
+
+What changed and why it prevents duplicates:
+- Added Acquire Requisition Lock and Release Requisition Lock around the creation decision. This serializes processing for the same requisition and removes race conditions that can lead to duplicate PO creation.
+- Introduced Check for Existing Order Item before any creation. This step searches for an existing PO item (exact match and fuzzy match on requisition line, vendor, material, delivery date, and status such as open/partially received/blocked).
+- Replaced the unconditional creation with an XOR gate between Reference Existing Order Item and Create Purchase Order Item. If a duplicate is found, the flow references/links the request to the existing PO item and does not create a new one. If no duplicate exists, creation proceeds. The exclusive choice ensures only one of these can ever happen per case.
+- The remainder of the process (confirmation, goods receipt, invoice handling) is unchanged and runs on the existing or newly created PO item.
+
+Effect: The creation activity is now gated and cannot be executed when a duplicate exists, and concurrent attempts are prevented by locking. This addresses both systemic and operational causes of duplicate orders while keeping downstream steps intact.

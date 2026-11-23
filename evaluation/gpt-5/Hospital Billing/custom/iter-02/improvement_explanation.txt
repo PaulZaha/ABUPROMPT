@@ -1,0 +1,9 @@
+External quality suffers when outputs are released or billed before they are verified, when cases silently drop without clear communication, and when necessary corrections cannot be made before finalization. The original model allowed RELEASE and CODE OK to run concurrently, permitted a silent skip after NEW, and could bill directly after FIN without ensuring RELEASE occurred first—all of which risk incorrect or confusing external outcomes.
+
+Improvements implemented:
+- Enforced a quality gate sequence FIN -> CODE OK -> RELEASE -> (optional) BILLED to prevent releasing or billing before verification. This ensures customers receive only verified, complete outputs and prevents premature billing.
+- Removed the silent skip path after NEW. Instead, the process now explicitly branches to either a cancellation path or the main processing path, improving completeness and accountability of external outcomes.
+- Added a cancellation notification step after DELETE to proactively inform external stakeholders of the case status, improving clarity and customer communication.
+- Introduced a skippable self-loop for CHANGE DIAGN (0..n repetitions) so that diagnostic corrections can be made as needed before FIN, increasing accuracy of the released result and any downstream billing.
+
+These changes directly enhance external quality by improving correctness, sequencing, and communication: verified information is released, billing follows only after release, customers are explicitly notified of cancellations, and necessary corrections can be performed before finalization.

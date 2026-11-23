@@ -1,0 +1,9 @@
+ The current process encompasses various steps for emergency room registration and triage, along with specific treatments related to sepsis management. To achieve the goals of reducing process execution time and decreasing wrong treatments, the following improvements are proposed:
+
+1. **Sequential Dependence Reduction**: Subprocess_2 currently acts as a sequential gate, executing leucocytes, CRP, and a potential lactic acid assessment. Making subprocess_2 concurrent allows medical staff to conduct tests simultaneously rather than in sequence, thus shortening execution time.
+
+2. **Feedback Loop Implementation**: A loop with a feedback stage is introduced around subprocess_4 to allow going back to the initial subprocess if discrepancies or further requirements are identified after executing subprocess_3. This softens rigid sequence adherence and enables correction of treatments more swiftly.
+
+3. **Mandatory Critical Checks**: Lactic acid evaluation should no longer be optional given its critical status in sepsis management. As such, subprocess_0 will be updated to execute lactic acid without an option to skip, minimizing possibilities for wrong treatments due to missing this crucial test.
+
+These enhancements contribute directly to reducing potential processing bottlenecks and enabling comprehensive care checks to avert incorrect treatments. 

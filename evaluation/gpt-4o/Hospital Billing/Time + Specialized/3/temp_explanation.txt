@@ -1,0 +1,7 @@
+ The given POWL model represents a process with several activities and subprocesses arranged in partial orders and exclusive choices. The improvement goals set are to reduce the process execution time and improve the external quality of the process. One major observation is subprocess_1, which involves releasing and checking the code, occurs potentially independently of other processes, which might allow for some concurrency to reduce total time. However, the subprocess_3 and subprocess_6 models introduce multiple optional paths which could lead to inefficiencies if not well controlled.
+
+To reduce process execution time, we can introduce concurrency where it's feasible. Changing subprocess_1 into a concurrent execution allows both activities, 'RELEASE' and 'CODE OK', to be performed simultaneously instead of sequentially. This effectively reduces the time needed for that subprocess.
+
+Regarding the external quality, removing unnecessary optional activities that do not add value or enhance the process ensures higher focus on quality-critical tasks. Particularly, subprocess_3 is set as an exclusive optional pathway containing subprocess_1. Making subprocess_1 concurrent may warrant a design where its execution is prioritized instead of being optional, ensuring critical tasks like 'code checking' happen reliably.
+
+These structural changes contribute to reducing execution time due to increased concurrency and improving external quality by focusing on critical, non-optional steps. 

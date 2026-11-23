@@ -1,0 +1,7 @@
+Key improvements focused on reducing time and cost by eliminating unnecessary rework and increasing parallelism where safe:
+- Make RELEASE depend on CODE OK (sequence CODE OK -> RELEASE) instead of running them concurrently. This avoids performing RELEASE when coding is not yet verified, reducing rework and associated cost.
+- Keep FIN in parallel with the CODE OK/RELEASE chain so overall cycle time shrinks via concurrency without sacrificing control.
+- Gate BILLED to occur only after both FIN and the optional CODE OK/RELEASE chain have completed. If the chain is skipped (not required), BILLED can proceed after FIN, but if the chain is executed, BILLED waits for it, preventing premature billing and costly corrections.
+- Retain early decisive branching after NEW (skip, DELETE, or processing) to avoid processing unnecessary cases, minimizing time and cost.
+- Flatten the structure to avoid nested partial orders inside partial orders, making dependencies explicit and preventing hidden sequencing constraints that can cause delays.
+These changes reduce execution time by enabling safe concurrency and reduce cost by eliminating redundant RELEASE work and preventing premature billing.

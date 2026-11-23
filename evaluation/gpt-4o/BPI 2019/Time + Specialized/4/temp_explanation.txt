@@ -1,0 +1,11 @@
+ The current process model allows for the possibility of duplicate orders due to the optional execution of "Receive Order Confirmation," which doesn't conditionally impact the rest of the process substantially. Also, the overall process execution time can be reduced by reevaluating the necessity and order of activities. To address these goals, I propose the following improvements: 
+
+1. Change the exclusive optional choice ("xor") for "Receive Order Confirmation" to a mandatory step right after "Create Purchase Order Item." This will enforce the receipt of confirmation for every order, preventing duplicates.
+
+2. Shift "Vendor creates invoice" before "Record Goods Receipt" so it can occur concurrently. This adjustment reduces waiting time and potential delays between goods receipt and invoice creation.
+
+3. Introduce concurrent execution between receiving the order confirmation, recording the goods receipt, and vendor invoice creation by altering subprocess dependencies. 
+
+4. Because "Remove Payment Block" now has sequential dependence on "Record Invoice Receipt" without concurrency, we can remove its optional execution path, resulting in a direct sequential flow.
+
+These changes will ensure that each purchase order is confirmed, minimizing duplicate order risk and shortening the overall process execution time due to concurrency introduction and reordering of activities.

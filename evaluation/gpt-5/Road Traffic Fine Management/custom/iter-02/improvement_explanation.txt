@@ -1,0 +1,11 @@
+Root cause: Send Fine happens before any validation, making it easy to send fines to the wrong recipient or for invalid/duplicate cases. Improvements introduce a pre-send gate with automated checks and an optional manual review, and add an explicit cancel path so invalid fines never reach Send Fine.
+
+What changed and why it reduces falsely sent fines:
+- Added concurrent pre-send validations: Validate Fine Data, Validate Recipient, and Check Duplicate/Already Paid. These block incorrect, misaddressed, or duplicate fines before any sending.
+- Introduced optional Manual Review for flagged or borderline cases via an xor(None, Manual Review). Approve Fine for Sending occurs only after validations (and manual review if executed), ensuring human oversight where needed.
+- Created an explicit Cancel Fine path chosen after validations when the fine is invalid, preventing any sending for those cases.
+- Moved Insert Fine Notification to after approval and before sending, ensuring only approved fines are recorded/notified.
+- Restructured post-send flow so Payment/penalty/collection can only occur if Send Fine happened, preventing downstream actions on invalid fines.
+- Removed the earlier optional sending branch and the ability to add penalty immediately after sending without validation, eliminating pathways that could lead to false fines.
+
+Feasibility: These checks leverage existing data (offense evidence, vehicle registry, payment records) and a simple manual review step for exceptions. Concurrency on validations preserves throughput while adding quality gates to prevent false positives.

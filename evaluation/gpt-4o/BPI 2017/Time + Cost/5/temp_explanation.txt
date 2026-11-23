@@ -1,0 +1,9 @@
+ The original process involves several activities and subprocesses orchestrated in loops and exclusive choices, leading to potential inefficiencies. To address the improvement goals of reducing execution time and cost, we focus on streamlining the process by removing unnecessary loops and making certain activities concurrent where possible. 
+
+1. **Remove Self-loops:** Subprocesses with self-loops on 'W_Handle leads', 'W_Complete application', and 'W_Call after offers' repeatedly execute until no further action is required. This can lead to increased execution time and costs due to potential repetition of tasks. We remove these self-loops to allow activities to execute only once or progress directly to the subsequent process.
+
+2. **Concurrent Execution:** There are dependencies among activities like 'A_Create Application', 'A_Submitted', 'W_Complete Application', etc. By revising the sequence and allowing some of these activities to execute concurrently, we reduce waiting times, thus decreasing the overall execution time.
+
+3. **Simplify model paths with optionality:** By reducing or streamlining the paths where activities are optional (such as 'A_Concept'), we provide a more direct route through the process.
+
+These adjustments contribute to faster and more cost-effective process execution by minimizing unnecessary repetition, improving resource utilization through concurrency, and streamlining decision pathways. 

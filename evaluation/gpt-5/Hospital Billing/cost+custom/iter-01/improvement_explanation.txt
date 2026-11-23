@@ -1,0 +1,9 @@
+Key issues in the original model that drive cost and degrade external quality: (1) Release and code validation can happen concurrently, increasing rework risk and producing externally visible errors (e.g., releasing or billing before code validation completes). (2) Billing was optional, which can lead to inconsistent customer communication and delayed or missing invoices. (3) A global skip path after NEW can silently drop cases, harming external quality. (4) Changes in diagnosis are not explicitly tied to re-validation, allowing outdated code to propagate.
+
+Targeted improvements:
+- Enforce a quality gate: CODE OK must complete before RELEASE and BILLED. This removes race conditions and prevents premature release/billing, reducing downstream correction costs and improving customer-facing accuracy.
+- Introduce a controlled rework loop: After any CHANGE DIAGN, the process automatically re-executes CODE OK. This ensures that every change is validated, improving external quality while limiting rework to cases where it’s necessary (reducing average cost versus ad-hoc corrections after release).
+- Make BILLED mandatory and place FIN at the end. Mandatory billing standardizes the external outcome and avoids costly follow-ups; finalizing only after billing prevents reopening cases and external inconsistencies.
+- Remove the silent skip path and keep DELETE as the explicit early alternative. If a case is invalid, it exits early (cost saving). Otherwise, it proceeds through the quality-controlled flow, avoiding half-finished or forgotten items.
+
+These changes reduce execution cost by cutting rework and coordination overhead, while improving external quality by ensuring only validated, complete outputs are released and billed, with clean case closure.

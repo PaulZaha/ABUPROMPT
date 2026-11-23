@@ -1,0 +1,8 @@
+Key redesign decisions to reduce execution time while keeping the process feasible and coherent:
+- Remove unnecessary rework on W_Complete application: replaced the self-loop with a single execution to eliminate repeated completion cycles that delay throughput.
+- Make W_Handle leads non-blocking and skippable: converted the 1..n loop to a 0..n loop and kept it behind A_Submitted inside an optional subflow; this avoids forcing at least one lead-handling iteration and cuts waiting time for cases that don’t need it.
+- Parallelize early: allow W_Complete application and A_Concept to start immediately after A_Create Application, in parallel with the (optional) submission/lead-handling subflow. This removes unnecessary serialization and shortens the critical path.
+- Correct the follow-up call loop: model W_Call after offers as a 0..n loop that starts only after O_Sent (mail and online), and place it strictly before closing. This eliminates the prior modeling issue where calls could reoccur after completion or cancellation.
+- Preserve control over closing: A_Complete or (A_Cancelled -> O_Cancelled) can only occur after W_Complete application finishes, and if the offer path is chosen, also after the (optional) follow-up call loop completes. This ensures early parallelization does not compromise correctness while still reducing overall cycle time.
+- Keep optionality where appropriate: A_Submitted and the entire offer path remain optional, preserving variants that skip these steps and thus minimizing time for simpler cases.
+Overall impact: fewer rework cycles, more concurrency on the critical path, and tighter gating of non–value-adding loops lead to reduced end-to-end execution time across common variants.

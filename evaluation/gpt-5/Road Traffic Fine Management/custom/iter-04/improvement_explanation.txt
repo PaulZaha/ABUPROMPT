@@ -1,0 +1,10 @@
+Key issues in the original model that caused falsely sent fines: (1) Send Fine could occur without any validation, (2) escalation to Credit Collection could happen even when no fine was sent, and (3) there was no explicit cancel path when the fine is invalid. The improved model adds a structured pre-send validation and an explicit approval/cancellation gate, and it reorders post-send steps to prevent erroneous escalations.
+
+What changed and why it reduces falsely sent fines:
+- Added a pre-send validation sequence executed for every fine before any send action: Validate Violation Data, Check Exemptions and Permits, Check Duplicates/Existing Payments, Verify Contact Details. This prevents sending fines with bad source data, to exempt vehicles/persons, to already settled cases, or to wrong recipients.
+- Introduced an approval gate: optional Manual Review (if ambiguous) followed by Approve Fine for Sending. Send Fine is only reachable after explicit approval. For low-confidence or edge cases, the manual review step reduces false positives.
+- Added an explicit Cancel Fine branch. If validation fails or review rejects, the process terminates without sending anything.
+- Reordered post-send steps to ensure integrity: Insert Fine Notification is optional but only after Send Fine; Add penalty is enforced before Send for Credit Collection, and both are only reachable after a fine has been sent. This prevents escalation for fines that were never actually sent.
+- Kept the Payment loop only after sending. This avoids processing payments prior to verification/sending and ensures payment actions are tied to an approved, sent fine.
+
+Feasibility: All added steps are common and feasible in fine management contexts (data validation against source system, permit/exemption registry checks, duplicate/payment lookup, address verification services, and a manual review queue). The structure cleanly gates sending on approval, a minimal but high-impact redesign that directly targets the goal of reducing falsely sent fines.

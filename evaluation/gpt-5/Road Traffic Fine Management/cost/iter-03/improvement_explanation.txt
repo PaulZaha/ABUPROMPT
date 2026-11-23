@@ -1,0 +1,6 @@
+Key cost-reduction changes applied to the process: 
+- Removed the manual 'Insert Fine Notification' step and integrated it as an automated system update triggered by existing steps. This eliminates labor time and duplicated handling without impacting compliance.
+- Made 'Send Fine' mandatory and placed a single decision directly after it: either the fine is paid or the case proceeds to penalty and then credit collection. This removes ambiguous skip paths that caused exceptions and rework.
+- Replaced the payment self-loop with a single payment path. Multiple manual payment attempts create repeated processing and transaction costs; by limiting to one, we reduce back-office and channel costs. Late or partial payments are handled via the credit collection process.
+- Consolidated the non-payment route into a minimal sequence ('Add penalty' -> 'Send for Credit Collection'), executed only when payment does not occur. This ensures penalty and collection activities are not performed unnecessarily, reducing average execution cost per case.
+Overall, the streamlined structure reduces the number of activities executed per case, removes redundant manual steps, and eliminates rework-heavy branches, directly lowering staff time, system usage, and third-party handling costs.

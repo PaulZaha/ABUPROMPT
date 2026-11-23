@@ -1,0 +1,17 @@
+What we changed and why it helps the goals:
+- Risk-stratified decision after ER Sepsis Triage (xor low-risk vs high-risk): removes the prior ability to skip the entire post-triage work-up, which risked under-treatment, and focuses resources where needed.
+- High-risk (sepsis-suspected) path standardized as a sepsis bundle:
+  - LacticAcid is mandatory with a self-loop to allow repeat measurements when indicated; this reduces diagnostic error and wrong escalation/de-escalation decisions.
+  - Blood Cultures must precede any antibiotics to improve appropriateness and reduce wrong antibiotic choices; avoids costly downstream complications of inappropriate therapy.
+  - Antibiotics are gated and optional: MD Approves Antibiotics, Antibiotic Allergy Check, and Antibiotic Selection Support must precede the antibiotic step; this reduces wrong treatments (e.g., allergy-related errors, wrong spectrum) and avoids unnecessary antibiotics (cost and stewardship).
+  - IV fluids are preceded by an Assess Need for IV Fluids step and made optional; this prevents unnecessary fluid administration (reducing both cost and harm from fluid overload).
+  - Leucocytes and CRP are optional instead of routine, reducing lab spend without compromising the core sepsis bundle.
+  - We removed the rigid sequence IV Liquid -> IV Antibiotics; antibiotics can proceed once gates are satisfied, avoiding mis-sequencing that could delay appropriate therapy.
+- Low-risk path: observation with optional targeted labs (Leucocytes, CRP) and no lactate/antibiotics/fluids by default, which directly reduces cost and prevents unnecessary treatment for non-sepsis patients. A Physician Reassessment ensures safety without routine broad work-up.
+- Modeling details for feasibility:
+  - xor(None, ...) used to make tests/treatments optional, but preceded by decision/approval steps where appropriate.
+  - loop(LacticAcid, None) permits 1..n lactate measurements for trend without forcing repeats.
+  - leucocytes/crp are reused via copy() in the low-risk branch to make modeling precise.
+Impact on goals:
+- Reduce execution cost: fewer routine tests (optional CRP/leucocytes), avoiding lactate in low-risk, optional fluids and antibiotics only when indicated, and early standardized decision-making to prevent rework.
+- Decrease wrong treatments: blood cultures before antibiotics, allergy check and selection support, MD approval gate, fluid-indication assessment, and mandatory lactate trending when sepsis is suspected to reduce both over- and under-treatment.

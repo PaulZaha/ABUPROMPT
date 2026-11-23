@@ -1,0 +1,9 @@
+ The improvements aim to reduce the overall process execution time by eliminating unnecessary sequential dependencies and increasing concurrency where possible. 
+
+1. **Optimization of Sequential Steps**: The subprocess dealing with 'Leucocytes', 'CRP', and possibly 'LacticAcid' measurements wasn't optimized for concurrency. By allowing 'Leucocytes' and 'CRP' to run concurrently with optional 'LacticAcid', the time taken is minimized.
+
+2. **Reduction of Outer Sequential Dependencies**: The subprocess executing 'IV Liquid' and 'IV Antibiotics' was optional but overly serialized, potentially slowing the process. By allowing these steps to execute concurrently when chosen, the time is further reduced.
+
+3. **Reordering and Simplification**: By reviewing and optimizing the partial order of the main subprocesses to ensure each step can execute as early and concurrently as possible, overall process execution time is decreased.
+
+These modifications contribute to the optimization goals by reducing waiting times between steps and improving throughput. 

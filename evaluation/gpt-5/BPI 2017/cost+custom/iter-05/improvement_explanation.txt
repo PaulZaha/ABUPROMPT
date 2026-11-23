@@ -1,0 +1,13 @@
+What I changed and why it meets the goals:
+- Eliminate costly rework loops: Replaced the unlimited self-loops on W_Handle leads, W_Complete application, and W_Call after offers with bounded/cheaper alternatives. This directly reduces manual effort and cost.
+- Make lead handling optional: Modeled W_Handle leads as a single optional step (xor(None, W_Handle leads)) instead of an unbounded loop. Only do it when necessary.
+- Bound application completion rework and automate communication: One manual completion attempt plus at most one rework cycle, which is only enabled after an automated O_Request Missing Info is sent. This caps manual labor while keeping the customer informed about missing data.
+- Replace repeated call attempts with automated reminders: Use a skippable self-loop of automated O_Offer Reminder (0..n) and allow at most one optional escalation call. Automated reminders are far cheaper and keep customers engaged.
+- Proactive status updates to keep customers informed: Added O_Submission Confirmation right after submission and outcome notices (O_Completion Notice or O_Cancellation Notice) at closure. These reduce inbound inquiries and improve transparency.
+- Simplify and correct loop semantics: Removed the previous do–redo structures that could trigger additional cycles after closure. The flow now proceeds in a clear sequence from intake to offer to closure.
+- Preserve optional concept phase: A_Concept remains optional to avoid unnecessary work while keeping the accepted–offer–sent sequence intact.
+
+Expected impact:
+- Cost reduction: Fewer manual touches (bounded rework, optional single call, optional leads handling) and more automated communications.
+- Customer informed: Explicit acknowledgements, reminder touchpoints, and outcome notices reduce uncertainty and improve experience.
+- Feasibility: Changes reflect common operational practices (automated emails/reminders, capped rework, limited escalation) and are straightforward to implement without altering core business logic.

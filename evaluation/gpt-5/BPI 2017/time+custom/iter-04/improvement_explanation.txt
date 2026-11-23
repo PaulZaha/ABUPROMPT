@@ -1,0 +1,22 @@
+Targeted improvements to reduce execution time and keep the customer informed:
+- Parallelize early work to cut waiting time: After A_Submitted, W_Handle leads and W_Complete application now run concurrently. This shortens the critical path because preparation and lead handling no longer wait on each other.
+- Fix non-terminating post-offer loop: The original loop used W_Call after offers with a redo over an exclusive choice that always fired (A_Complete or cancellation), which caused the loop to never terminate. We removed this loop and replaced it with a single optional manual call plus automated reminders.
+- Replace repeated manual follow-ups with automated, non-blocking communications: Introduce automated notifications at key milestones and reminders to reduce human effort and speed up response times.
+  - N_Submission Confirmation after A_Submitted to reassure the customer and reduce inbound queries.
+  - N_Offer Sent immediately after O_Sent (mail and online) to inform the customer and prompt action.
+  - N_Reminder as a skippable self-loop to send zero or more reminders without blocking the process.
+  - Outcome notifications integrated into each decision branch: after A_Complete (N_Outcome - Completed) and after O_Cancelled (N_Outcome - Cancelled) to keep the customer fully informed.
+- Keep concept check optional but ordered: A_Concept remains optional and must precede A_Accepted if executed. This preserves fast-track cases while maintaining control where needed.
+- Flatten and clarify control-flow: Use a single top-level partial order (no partial_order nested inside another partial_order) to make dependencies explicit, reduce modeling ambiguity, and avoid hidden bottlenecks.
+
+Why this reduces execution time
+- Concurrency right after submission reduces idle time and handoffs.
+- Eliminating the infinite call loop removes unnecessary rework and delays.
+- Automated notifications and reminders reduce manual touches and speed up customer responses.
+
+Why this keeps the customer informed
+- Customers receive timely messages at submission, offer dispatch, reminder intervals, and final outcome, lowering uncertainty and support contacts.
+
+Feasibility notes
+- Notifications are modeled as automated activities; they are non-blocking and can be implemented via CRM/communication services.
+- Optional call and reminders are configurable based on case complexity, so the model fits both simple and complex cases without extra lead time.

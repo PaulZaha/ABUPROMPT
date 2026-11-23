@@ -1,0 +1,10 @@
+Key time-reduction opportunities identified and implemented:
+- Remove wait for labs before treatment: Previously, IV treatment could start only after labs finished. We made labs and treatment concurrent so antibiotics/fluids can start immediately, reducing door-to-antibiotic time.
+- Parallelize IV antibiotics and fluids: Replaced the fixed sequence (IV Liquid -> IV Antibiotics) with full concurrency so antibiotics can start as soon as IV access is available, often piggybacked while fluids run.
+- Start the sepsis bundle at triage under standing orders: Moved the optional sepsis bundle (labs and optional treatment) to start right after ER Triage, in parallel with ER Sepsis Triage. This enables early blood draw and prep/admin while clinical triage is ongoing, shaving off idle time.
+- Preserve clinical flexibility: Lactic acid remains optional; treatment remains optional within the bundle. Labs remain mandatory when the bundle is triggered, matching typical sepsis protocol expectations.
+How this reduces execution time:
+- Overlaps diagnostic and therapeutic steps to eliminate sequential waits.
+- Starts critical-path tasks (antibiotics, lab draw) earlier and in parallel with sepsis triage.
+- Removes unnecessary ordering constraints between fluids and antibiotics.
+These changes are feasible via nurse-driven standing orders at triage and concurrent infusion setup, commonly used in sepsis protocols.

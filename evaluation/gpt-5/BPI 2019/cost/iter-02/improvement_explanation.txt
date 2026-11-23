@@ -1,0 +1,11 @@
+Primary cost drivers in the original model are manual touches and unnecessary steps before invoice settlement. The redesign removes non–value-adding activities, pushes straight-through processing (STP) where possible, and ensures only exception cases require manual handling.
+
+What changed and why it reduces execution cost:
+- Removed Receive Order Confirmation: This capture is non-essential for standard POs and usually adds administrative effort without affecting downstream matching. Removing it eliminates a manual touch and related follow-ups.
+- Removed Vendor creates invoice as an internal step: It is an external vendor action and does not consume our resources; excluding it from our flow avoids gating and simplifies the process.
+- Introduced e-invoicing auto-posting: Invoice entry is now an exclusive choice between Auto-Record e-Invoice and manual Record Invoice Receipt. This increases no-touch rate and reduces AP data entry time.
+- Introduced STP auto clearing with a dedicated Auto-Clear Invoice branch. Only mismatches go through the exception branch (Remove Payment Block -> Clear Invoice). This ensures human effort is limited to true exceptions, cutting labor significantly.
+- Enabled concurrency of Goods Receipt and Invoice Receipt: Both can proceed in parallel. Clearing only starts after both are done, preserving 3-way match control while reducing hand-off delays and the indirect effort spent on status checks and expedites.
+- Simplified control flow: Fewer nodes and clearer separation between STP and exception paths reduces variant complexity, training, and handling time.
+
+Feasibility: The model assumes supplier onboarding to e-invoicing and ERP configuration for 3-way match and auto-clearing—standard, widely adopted capabilities. Controls remain robust: clearing is gated by completion of both Invoice Receipt and Goods Receipt; exceptions still require explicit block removal.

@@ -1,0 +1,10 @@
+ 
+The original process model has several opportunities for improvements. 
+
+1. **Optimization of Test Activities**: Currently, the model allows the concurrent execution of the 'Leucocytes', 'CRP', and 'LacticAcid'. Running all these tests simultaneously may lead to unnecessary costs. To reduce costs, we can define specific criteria in the 'ER Sepsis Triage' phase that will help choose the relevant tests, thus avoiding unnecessary laboratory tests.
+
+2. **Streamline Treatment Path**: The process will execute 'IV Liquid' and 'IV Antibiotics' in sequence only if selected in the 'xor' choice. To reduce the occurrence of wrong treatments, we can add a verification step 'Treatment Confirmation' before this sequence is executed, ensuring the compatibility of intravenous treatments and preventing incorrect administration.
+
+3. **Early Detection Adjustments**: Add a 'Sepsis Risk Assessment' step after 'ER Triage' and before 'ER Sepsis Triage', which uses clinical guidelines to stratify patients' sepsis risk. This can help better tailor subsequent testing and treatment decisions, reducing unnecessary interventions.
+
+These changes address both goals by ensuring only necessary activities (tests and treatments) are executed, hence reducing costs, while also applying a verification step to minimize wrong treatments. 

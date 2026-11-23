@@ -1,0 +1,14 @@
+Key changes to reduce execution cost and reduce falsely sent fines:
+- Add pre-issue validation gates (Validate Evidence, Check Duplicate/Existing Fine, Validate Debtor Data) before creating and sending a fine. This prevents issuing fines based on poor evidence, duplicates, or bad master data, directly reducing false fines and all downstream costs.
+- Make sending the fine mandatory (via a delivery choice) and eliminate the previous option to skip sending the fine. The original model allowed collection actions without a sent fine, which is both costly and risky. Now, either a digital e-Fine or a paper fine is sent, but skipping is not allowed.
+- Introduce a digital-first delivery path (Send e-Fine vs Send Fine via XOR). Prioritizing digital delivery cuts postage/printing costs and shortens cycle time; paper is kept as a fallback to ensure feasibility.
+- Add due-process steps and proper sequencing: Insert Fine Notification, Wait for Due Date, and Send Final Reminder precede any penalty. This guards against premature penalties, lowering the risk of false fines and associated rework.
+- Make penalty optional via XOR, so it only occurs when business rules apply (e.g., still unpaid after reminders). This avoids unnecessary internal steps and cost when not needed.
+- Add an appeal subflow (optional Record Appeal -> Review Appeal -> optionally Cancel Fine). It creates a controlled way to correct errors prior to escalation, reducing falsely sent fines and reputational/legal costs.
+- Keep Payment as an optional self-loop path available after the fine is delivered (to support partial/multiple payments). This encourages resolution without escalation and avoids collection fees. The final collection step is gated by a Final Collection Eligibility Check to ensure no payment or upheld appeal exists before escalation.
+- Add a Final Collection Eligibility Check before the (optional) Send for Credit Collection step. This prevents costly and incorrect escalations when the case is already paid, appealed, or canceled.
+
+Resulting effects:
+- Fewer false fines due to upfront validation and a formal appeal-and-cancel path.
+- Lower execution cost by digital-first delivery, fewer unnecessary penalties and escalations, and reduced rework from duplicates and incorrect collections.
+- Corrected control-flow anomaly in the original model that allowed escalation without evidence of delivery.

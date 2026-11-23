@@ -1,0 +1,16 @@
+To keep the customer informed end-to-end without disrupting the core routing, I added explicit customer communication activities (prefixed with 'C_') at all key milestones and embedded periodic updates into iterative parts of the process. These are feasible as automated notifications triggered by existing system states/tasks.
+
+Key changes and how they help:
+- After application creation and submission, send immediate confirmations so customers know their request was received and is being worked on.
+- During iterative lead handling and application completion, send status updates each iteration so customers see progress and are not left in the dark; optionally request additional information when needed.
+- After concept (pre-decision), notify the customer that the application is under review.
+- On acceptance, before offer creation, notify acceptance; after offer creation and send, notify the customer that the offer is created and sent (including online availability).
+- After each follow-up call attempt, notify the call outcome (e.g., reached/voicemail) to maintain transparency.
+- On final outcomes (completion or cancellation), send definitive notifications.
+
+Design considerations:
+- Notifications are added as sequential steps after the relevant activities or inside loop bodies, ensuring they occur reliably without altering the original decision logic.
+- Optional steps (like requesting additional info) are modeled with xor(None, ...), keeping them conditional.
+- The existing loops and choices remain intact, with notifications complementing them to improve customer communication.
+
+Overall, these changes provide proactive, consistent touchpoints throughout the process, directly supporting the goal of keeping the customer informed.

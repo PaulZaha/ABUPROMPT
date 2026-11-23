@@ -1,0 +1,9 @@
+Targeted improvements and how they meet the goals:
+- Prevent duplicate orders: Introduced a mandatory Check for Duplicate Order immediately after Create Purchase Order Item. The follow-up XOR branches into either Cancel Duplicate Order (terminates the flow) or Continue (the rest of the process). Because the entire downstream process is encapsulated in the continue branch, duplicates are stopped early and cannot propagate to later steps (goods receipt, invoicing, or clearing).
+- Reduce process execution time by removing unnecessary waiting:
+  - Receive Order Confirmation is now optional and fully parallel; it no longer gates goods receipt or invoice handling. This shortens the critical path.
+  - Enabled early invoice capture: Record Invoice Receipt can proceed in parallel with Record Goods Receipt. Clearing is only allowed after both invoice and goods receipt are available, so compliance is maintained without delaying invoice capture.
+  - Retained Remove Payment Block as an optional step between invoice receipt and clearing, but it no longer delays other parallel activities.
+- Preserve optional invoice processing: Clear Invoice is optional (some POs don’t require clearing). When chosen, it can only execute after both Record Invoice Receipt (via the optional remove block path) and Record Goods Receipt, enforcing a three-way match while allowing maximum parallelism.
+- Structural clarification: The improved model removes the earlier gating of the entire process by Receive Order Confirmation and consolidates dependencies in a single partial order inside the continue branch, minimizing nested ordering complexity while keeping XORs for optionality.
+Net effect: Duplicates are proactively blocked; the remaining steps run in parallel wherever safe, reducing overall end-to-end time without sacrificing control or matching requirements.

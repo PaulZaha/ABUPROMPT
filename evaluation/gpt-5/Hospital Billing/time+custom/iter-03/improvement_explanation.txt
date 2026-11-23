@@ -1,0 +1,8 @@
+Key changes made to reduce execution time and improve external quality:
+- Enforce quality gate: CODE OK is now mandatory and must precede BILLED. This guarantees correct coding before billing, preventing external errors (wrong invoices) and rework.
+- Correct sequencing: RELEASE must occur before CODE OK so the coding check uses a complete, finalized patient record. This reduces downstream corrections and improves external quality.
+- Flexible, fast corrections: Introduce a skippable self-loop for CHANGE DIAGN (0..n times) before CODE OK. If no change is needed, the loop executes zero times; if changes are needed, they can be done in batches before the quality check. This minimizes back-and-forth and shortens cycle time.
+- Safe parallelization: Allow RELEASE and CHANGE DIAGN to proceed concurrently, then gate CODE OK after both. This parallel work reduces overall duration without compromising quality.
+- Remove skip-after-NEW path: Replace the previous XOR that allowed skipping all steps with a clean choice between DELETE or the full processing path. This avoids accidental bypass of quality-critical steps while preserving an early cancellation route.
+- Proper closure: FIN occurs after BILLED to ensure the case is closed only when external commitments are correctly completed.
+Overall impact: Parallelizing safe tasks and eliminating optional quality-critical steps reduces throughput time, while mandatory CODE OK before BILLED and correct sequencing enhance external quality and customer-facing accuracy.

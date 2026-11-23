@@ -1,0 +1,15 @@
+Main execution-time drivers in the original model were (1) unbounded self-loops on W_Complete application and W_Handle leads, and (2) a loop that forced at least one W_Call after offers before any possibility to complete or cancel. Additionally, the flow enforced sequentiality between the submission/lead-handling leg and the application-completion leg, preventing parallel work. The redesign targets these issues:
+
+1) Remove the forced first call after offers and make follow-ups skippable and bounded: replaced loop(subprocess_4, ...) with a skippable self-loop loop(None, W_Call after offers) that allows 0..n calls and only after an offer has been sent. This eliminates unnecessary calls in fast cases and avoids an unconditional delay at the end.
+
+2) Bound rework on application completion: replaced the unbounded self-loop on W_Complete application with exactly one mandatory attempt plus an optional second pass (using copy()). This curbs long-running rework cycles while still allowing one retry if needed.
+
+3) Reduce lead-chasing overhead: replaced the unbounded self-loop on W_Handle leads with a single optional attempt (0..1). This prevents protracted lead handling from dominating cycle time.
+
+4) Increase parallelism: decoupled the optional submission/lead-handling leg from the completion/decision/offer leg so they can proceed concurrently after A_Create Application. This removes the prior dependency (subprocess_9 -> subprocess_12) and shortens overall elapsed time when teams work in parallel.
+
+5) Keep offer follow-ups conditional: calls are only reachable if an offer was actually sent; otherwise they are skipped entirely, avoiding unnecessary waiting and handoffs.
+
+6) Keep A_Concept optional and confined to the completion branch so it does not run in canceled cases, reducing wasted work.
+
+Together, these changes reduce average cycle time by removing mandatory waits, bounding rework, and exploiting concurrency while keeping the process feasible and controlled (one bounded retry for completion, optional follow-ups only when needed).

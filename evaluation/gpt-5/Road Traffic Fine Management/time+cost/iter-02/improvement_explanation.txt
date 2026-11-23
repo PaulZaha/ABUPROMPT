@@ -1,0 +1,13 @@
+Key changes focused on removing waste, automating retries, and gating escalation to collection so that we shorten the path to payment and avoid unnecessary cost.
+
+What was improved and why:
+- Made Send Fine mandatory directly after Create Fine. The original model allowed skipping Send Fine, which led to rework and premature escalation or payment attempts without formal notification. Enforcing this sequence reduces exceptions and speeds resolution.
+- Reframed the middle of the process as a payment-reminder-penalty loop: start with a Payment attempt; if unpaid, automatically Insert Fine Notification followed by Add penalty, then try Payment again. This captures standard dunning behavior, reduces manual effort, and accelerates payment by keeping the customer engaged with automated reminders. The loop ensures penalties are only applied if a prior payment attempt failed, improving fairness and minimizing unnecessary penalty administration.
+- Moved Send for Credit Collection to an optional step only after the payment/reminder/penalty loop completes. This prevents premature handovers to collections, reducing external fees and administrative overhead, while still allowing escalation if needed.
+- Removed multiple optional/skip XOR branches that created inconsistent paths (e.g., skipping Send Fine or mixing Payment and Collections choices). A clearer, linear backbone lowers coordination overhead and cycle time.
+
+Impact on goals:
+- Reduce execution time: Immediate payment attempt after sending the fine, automated reminders, and a streamlined flow minimize waiting and handoffs, accelerating case resolution.
+- Reduce execution cost: Fewer exceptions and manual touches, automated reminders, and gated use of collections reduce operational effort and third-party costs.
+
+The updated model remains feasible operationally: it preserves necessary compliance steps (creation and sending of the fine), leverages automated communication for retries, applies penalties only after failed payment attempts, and escalates to collections only when warranted.

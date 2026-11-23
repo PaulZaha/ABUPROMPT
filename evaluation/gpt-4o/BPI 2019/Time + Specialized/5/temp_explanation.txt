@@ -1,0 +1,11 @@
+ The existing process model consists of several elements that can be optimized to reduce execution time and prevent duplicate orders. 
+
+1. **Reduce Process Execution Time**:
+   - Currently, there is a conditional path `subprocess_0` for `receive_order_confirmation`, which can potentially delay the process if confirmation is awaited. Making this step mandatory can eliminate decision delays in the process.
+   - `subprocess_1`, `subprocess_2`, and `subprocess_5` have optional paths which should be re-evaluated to ensure they contribute to reducing execution time. By enforcing invoice handling as a mandatory task, potential delays can be minimized, speeding up overall execution.
+
+2. **Prevent Duplicate Orders**:
+   - Introduce a loop mechanism immediately after the `create_purchase_order_item` activity to ensure a verification step is performed, checking for duplicate orders before proceeding to receive order confirmation, thereby preventing duplicates upfront.
+
+Remember, as the process owner, these changes are feasible considering existing operational requirements and system capabilities. Implementing these improvements will streamline the workflow, making it more efficient and reliable.
+

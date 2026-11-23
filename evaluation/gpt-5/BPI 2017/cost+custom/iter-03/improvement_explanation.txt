@@ -1,0 +1,20 @@
+What I changed and why it meets the goals:
+- Remove cost drivers (unbounded manual loops) and replace with automation
+  - Replaced the unbounded loops on W_Handle leads and W_Call after offers with cost‑effective automation:
+    - Added O_Automated Lead Scoring after A_Submitted and made W_Handle leads optional (xor with None) so manual work only happens when needed.
+    - Replaced repeated manual follow-ups with O_Automated Offer Reminder in a skippable loop (0..n) and a single optional escalation to W_Call after offers.
+  - Limited costly rework on W_Complete application to at most one extra pass using copy() and an optional xor, instead of an unbounded self-loop.
+- Make submission mandatory and acknowledge immediately
+  - A_Submitted is now required after A_Create Application, followed by O_Submission Acknowledgement to keep the customer informed immediately at near-zero cost.
+- Proactive customer updates at key milestones (keep customer informed)
+  - Added O_Status Update: In Review after application completion, O_Status Update: Accepted after A_Accepted, and O_Final Decision Notification after either A_Complete or O_Cancelled.
+  - Retained O_Sent (mail and online) to inform about dispatch of the offer and added low-cost automated reminders thereafter.
+- Clean, deterministic flow with optional steps where appropriate
+  - Simplified the control flow into a clear, linear backbone with xor(None, ...) for optional steps and loop(None, ...) where a 0..n repetition is desired.
+  - Kept A_Concept optional before acceptance; preserved the acceptance-to-offer creation chain.
+How this reduces cost and keeps customers informed:
+- Cost reduction: fewer manual touches (automated scoring and reminders), bounded rework, and optional manual follow-up only when necessary.
+- Customer information: immediate submission acknowledgement, status updates at review and acceptance milestones, and a final decision notification ensure transparency throughout.
+Implementation notes:
+- xor(None, X) makes X optional; loop(None, X) models 0..n repetitions of X; copy() is used to allow at most one additional rework execution of W_Complete application.
+- The final partial order ensures the intended sequencing without nesting partial orders inside other partial orders (except as a branch within an xor which is supported).

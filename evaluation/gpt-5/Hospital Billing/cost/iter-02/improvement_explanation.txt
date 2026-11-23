@@ -1,0 +1,13 @@
+To reduce execution cost, the model is redesigned to eliminate costly rework and avoid performing non-essential tasks on non-billable cases.
+
+Key changes and how they reduce cost:
+- Replace the concurrency between RELEASE and CODE OK with a strict sequence enforced by a quality cycle (loop). This prevents releasing before coding is verified, cutting rework and error-handling costs.
+- Introduce a targeted rework loop: loop(CODE OK, CHANGE DIAGN). Diagnosis changes now happen only when the code check indicates they are needed, avoiding unnecessary changes and repeated work.
+- Split the process into two clear paths after NEW: a billable path and a non-billable path.
+  - Non-billable path finalizes directly (FIN) and skips RELEASE and CODE OK, eliminating unnecessary activities and their costs.
+  - Billable path performs CODE OK -> RELEASE -> optional BILLED -> FIN, ensuring the minimum necessary steps in the correct order and avoiding premature finalization.
+- Keep the early DELETE option immediately after NEW to stop processing invalid cases before any cost is incurred.
+- Maintain the option to skip further processing (None) where appropriate, preserving the lowest-cost branch when no action is required.
+- Simplify nested partial orders and remove unnecessary concurrency, reducing the likelihood of coordination overhead and follow-up corrections.
+
+Overall, the redesign reduces execution cost by: (1) preventing errors and rework through proper sequencing and a controlled rework loop; (2) avoiding expensive steps for non-billable scenarios; and (3) terminating invalid cases early.

@@ -1,0 +1,14 @@
+Primary cost drivers in the current model are repeated manual loops (W_Handle leads, W_Complete application, W_Call after offers), sending offers via two channels at once, and duplicated offer creation/recording work. The redesign focuses on removing unnecessary rework and minimizing expensive communications while keeping essential controls.
+
+What changed and why it reduces cost:
+- Removed rework loops: Replaced self-loops on W_Handle leads and W_Call after offers with optional single executions (xor with None). This cuts repeated labor time and associated costs for outreach and follow-ups.
+- One-time completion: Removed the loop around W_Complete application to avoid iterative completion work. The flow now completes once, then proceeds to concept/offers decisions, reducing rework costs.
+- Consolidated offer creation and recording: Merged O_Create Offer and O_Created into O_Create & Record Offer to eliminate duplicative admin steps and handoffs.
+- Cheaper communication by design: Replaced O_Sent (mail and online) with an exclusive choice (online or mail). Operationally, set the default to online and use mail only for exceptions/preferences, reducing postage/printing costs.
+- Eliminated the outer redo loop: Sequenced a single optional call after offers, followed directly by either completion or cancellation. This prevents churn (repeated call/completion/cancel cycles) and lowers telephony and agent time.
+
+Feasibility/controls maintained:
+- The concept and offer stages remain optional (xor), allowing risk-based triage. Acceptance still gates offer creation. Cancellation handling is preserved. The sequence keeps compliance checkpoints while reducing expensive repetitions.
+
+Expected impact:
+- Fewer manual touches and follow-ups, lower postage/printing, and reduced agent time. These changes directly lower process execution cost without compromising decision controls.

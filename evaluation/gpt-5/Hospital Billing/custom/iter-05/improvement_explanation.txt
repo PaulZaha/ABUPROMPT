@@ -1,0 +1,24 @@
+Goal: improve external quality (accuracy, completeness, and consistency of what customers/payers receive).
+
+Issues in the original model:
+- Critical external-facing activities (RELEASE, CODE OK, BILLED) were optional or skippable, risking incomplete or incorrect outputs.
+- RELEASE and CODE OK could occur concurrently, enabling CODE OK to happen before RELEASE or be skipped entirely, reducing reliability.
+- The entire processing after NEW could be skipped (None branch), creating silent drops and inconsistent external outcomes.
+- BILLED was optional and not gated by a verified quality check, risking incorrect billing.
+
+Targeted improvements:
+- Make the processing path explicit and mandatory (except for an explicit DELETE path for invalid records). Removed the "skip all" None branch to avoid silent drops.
+- Enforce a clear sequential order for external-facing steps: RELEASE -> quality loop (CODE OK with corrective CHANGE DIAGN) -> FIN -> BILLED -> INVOICE SENT.
+- Introduce a quality loop: loop(do=CODE OK, redo=CHANGE DIAGN) ensures that any diagnosis correction is immediately followed by another quality check, guaranteeing correctness before finalization and billing.
+- Add INVOICE SENT as a final step to ensure the external deliverable (invoice/claim) is actually communicated, improving timeliness and customer-facing completeness.
+- Eliminate concurrency between RELEASE and CODE OK; make CODE OK a strict gate before FIN and BILLED.
+
+External quality impact:
+- Accuracy: repeated CODE OK after any CHANGE DIAGN prevents erroneous coding from reaching customers/payers.
+- Completeness and consistency: mandatory RELEASE, FIN, BILLED, and INVOICE SENT ensure customers receive a finalized, communicated output every time (unless explicitly deleted).
+- Compliance and reliability: the gating sequence reduces rejected claims/invoices and improves stakeholder trust.
+
+Feasibility:
+- Uses existing activities and adds only INVOICE SENT (a common and realizable step).
+- The loop leverages the current CHANGE DIAGN activity to enable iterative corrections without introducing complex new structures.
+- Keeps DELETE as an explicit alternative to handle invalid NEW records without producing external artifacts.

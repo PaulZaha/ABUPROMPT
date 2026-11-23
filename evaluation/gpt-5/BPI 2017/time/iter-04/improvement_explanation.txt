@@ -1,0 +1,10 @@
+Objective: reduce total execution time by eliminating rework loops and exploiting safe concurrency on the critical path.
+
+What changed and why this accelerates the process:
+- Removed unbounded rework loops: Replaced loop(W_Handle leads), loop(W_Complete application), and loop(W_Call after offers) with single-pass/optional executions. In the model, loop(...) was replaced by either the plain activity (single pass) or xor(None, activity) (optional). This removes repeated handoffs/rework cycles that extend duration.
+- Immediate submission and early parallel work: A_Submitted is now a mandatory, automatic step immediately after A_Create Application; from there, W_Handle leads (optional), A_Concept (optional), and W_Complete application can proceed in parallel. This eliminates idle time between steps and front-loads preparatory work.
+- Offer drafting in parallel with acceptance: Instead of waiting for A_Accepted before O_Create Offer, the model now drafts the offer after W_Complete application while acceptance is processed in parallel. O_Sent (mail and online) still waits for both O_Created and A_Accepted, preserving control while shortening the critical path.
+- Decoupled follow-up calls from process completion: A single optional W_Call after offers can occur after sending the offer and no longer gates completion/cancellation. Completion (A_Complete) or cancellation (A_Cancelled -> O_Cancelled) can proceed in parallel right after O_Sent.
+
+Resulting time impact:
+- Critical path shortened by eliminating loops and enabling concurrency (submission -> complete application -> parallel offer creation and acceptance -> send). Optional activities no longer block progression, cutting waiting time and handoffs while keeping necessary controls (acceptance required before sending).

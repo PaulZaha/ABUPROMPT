@@ -1,0 +1,7 @@
+ In the existing process model, there are several points where process execution costs can be reduced. First, within the subprocesses modeled as optional (using `xor` with `None`), there are instances where non-essential activities lead to unnecessary costs. Streamlining these activities can help reduce costs. Additionally, subprocesses using `partial_order` offer room for reordering to maximize resource utilization and minimize waiting time. Here are the proposed improvements:
+
+1. Simplify optional subprocesses: Remove the `Receive Order Confirmation` as an optional step after `Create Purchase Order Item`. This confirmation step might be redundant if purchase orders are system-audited automatically.
+2. Streamline invoice subprocess: Directly link `Vendor creates invoice` with `Record Invoice Receipt` and evaluate whether `Remove Payment Block` is necessary. If the block is systematic or can be automated, removal simplifies and reduces manual processing costs.
+3. Reevaluate process concurrent elements: Ensure dependencies with existing subprocesses do not incur additional waiting time and adjust ordering for efficiency, potentially allowing `Record Goods Receipt` and `Vendor creates invoice` to occur independently.
+
+These adjustments lead to a more streamlined, efficient process with decreased manual interventions, thus reducing costs. 

@@ -1,0 +1,9 @@
+Key cost drivers in the original model were (a) an unbounded Payment self-loop that can generate many administrative touches and transaction handling costs, (b) triggering the penalty workflow before giving payers a chance to settle, which creates avoidable rework and disputes, (c) the ability to send cases to credit collection too early, incurring high third‑party fees, and (d) a path that allowed skipping “Send Fine,” leaving created-but-unsent fines that later require costly back-office cleanup.
+
+What changed and why it reduces cost:
+- Make “Send Fine” mandatory: Removing the optional skip of sending avoids exceptions (created-but-unsent fines) that lead to manual reconciliation and follow-up effort. The small, automated send step prevents larger downstream costs.
+- Replace the unbounded Payment loop with a capped 0–2 payment attempts: Using an XOR over 0, 1, or 2 payments eliminates open-ended rework and limits transaction handling costs and staff time spent on partial payments. This preserves flexibility (installments) while bounding effort.
+- Sequence internal resolution before escalation: Payment attempts occur before any credit collection. This avoids premature external collection, cutting expensive agency fees.
+- Trigger the penalty workflow only if needed (after payment attempts): The notification + penalty sequence now occurs only when payment did not happen, reducing unnecessary touches and dispute handling for customers who pay promptly.
+
+Resulting flow: Create Fine -> Send Fine -> up to two Payment attempts (0/1/2) -> optional Notification+Penalty -> optional escalation to Credit Collection. This streamlined, bounded, and staged decisioning reduces execution cost by minimizing rework, containing payment processing effort, and curtailing early escalations to third parties.

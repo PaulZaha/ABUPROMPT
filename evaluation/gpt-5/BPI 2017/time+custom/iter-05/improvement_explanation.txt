@@ -1,0 +1,13 @@
+Targeted improvements to reduce execution time and keep the customer informed:
+- Remove unnecessary optional skip of A_Submitted and trigger it right after A_Create Application. This eliminates a branch that could defer starting work and the first customer touchpoint.
+- Parallelize early back-office work to compress cycle time: W_Handle leads and W_Complete application now run concurrently right after A_Submitted. This reduces overall elapsed duration by overlapping two labor-intensive streams.
+- Flatten the previous nested loops across completion and offer preparation. Acceptance (A_Accepted) is now a single gate that occurs after both early work streams; the optional concept (A_Concept) remains available, but if chosen, it must precede acceptance. This reduces rework cycles and handoffs that previously elongated throughput time.
+- Keep customer informed via proactive, non-blocking notifications at key milestones, modeled as separate activities that run in parallel so they do not delay processing:
+  - N_Submission Confirmation after A_Submitted.
+  - N_Acceptance Notification after A_Accepted.
+  - N_Offer Sent Notification after O_Sent (mail and online) to update the portal or send a confirmation.
+  - N_Completion Confirmation after A_Complete (in the completion branch).
+  - N_Cancellation Notification after O_Cancelled (in the cancellation branch).
+- Replace the unbounded manual call loop with a leaner, mixed approach after the offer is sent: an optional single manual call (W_Call after offers) and a skippable self-loop of automated reminders (N_Automated Reminder). This sustains customer communication while reducing manual effort and elapsed time waiting for responses.
+- Maintain a clear, single top-level partial order to avoid hidden dependencies and improve model clarity, while using XOR and LOOP only where behaviorally necessary.
+Together, these changes shorten the critical path (parallelization, fewer cross-phase loops), streamline post-offer follow-ups (automated reminders with at-most-once manual call), and add timely, non-blocking notifications to keep customers informed without slowing execution.

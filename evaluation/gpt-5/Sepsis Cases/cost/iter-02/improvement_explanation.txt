@@ -1,0 +1,9 @@
+Cost drivers in the original model were (a) performing the full lab panel (Leucocytes + CRP and optionally Lactic Acid) by default, (b) bundling IV Liquid with IV Antibiotics whenever the treatment branch was chosen, and (c) always executing a specialized ER Sepsis Triage step. The redesign targets these:
+
+- Make ER Sepsis Triage optional: Only high-risk cases (identified during ER Triage) proceed to the specialized sepsis triage. This reduces clinician time and overhead for low-risk patients. Implemented via xor(None, er_sepsis_triage).
+- Rationalize labs: Run Leucocytes first and make CRP optional. This reduces routine test spend while retaining essential initial information. Implemented via leucocytes -> xor(None, crp).
+- Move Lactic Acid into the antibiotics path: Lactic Acid is executed only when planning antibiotics, avoiding the cost for fluid-only or watchful-wait cases. Implemented by placing LacticAcid before IV Antibiotics in the antibiotics branch.
+- Unbundle therapy: Allow three choices—no therapy, IV fluids only, or Lactic Acid-guided antibiotics (LacticAcid -> IV Liquid -> IV Antibiotics). This prevents automatic antibiotic use and lowers drug costs. Implemented via xor(None, iv_liquid.copy(), partial_order(...)).
+- Preserve clinical sequencing: Therapy occurs only after initial labs, enforced by dependencies from Leucocytes (and optional CRP) to therapy_choice.
+
+Feasibility: These changes align with standard ER protocols—risk-gated sepsis triage, stepwise labs (starting with the cheapest/high-yield test), and antibiotic stewardship. They can be operationalized via triage rules and order-set defaults. Overall, this reduces lab utilization and antibiotic spend while maintaining safe decision points.

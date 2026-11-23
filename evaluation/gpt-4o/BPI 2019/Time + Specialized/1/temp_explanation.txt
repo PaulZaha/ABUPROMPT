@@ -1,0 +1,12 @@
+ 
+
+Description of Improvements:
+
+1. **Activity Sequencing**: To reduce process execution time, we will eliminate unnecessary optional subprocesses and ensure activities are executed without redundant options. Specifically, making "Receive Order Confirmation" non-optional ensures that every created purchase order item is confirmed swiftly, reducing uncertainty in processing.
+
+2. **Loop and Fork Adjustments**: Introducing loops to validate duplicate orders can prevent unnecessary repetitions within the process. The 'Receive Order Confirmation' and 'Create Purchase Order Item' steps will be combined in a loop to ensure confirmation before proceeding further.
+
+3. **Activity Consolidation**: Merging related activities and subprocesses can streamline execution. The subprocesses to receive order confirmation and vendor creates invoice are parallelised to reduce time consumed in waiting for confirmations.
+
+By applying these improvements, the process execution time is reduced by avoiding redundant optional subprocess executions and introducing parallel executions where applicable. Confirming purchase orders also becomes mandatory, which prevents duplicate orders.
+

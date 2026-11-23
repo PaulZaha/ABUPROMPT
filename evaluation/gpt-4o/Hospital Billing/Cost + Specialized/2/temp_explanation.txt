@@ -1,0 +1,22 @@
+ The given process model involves activities related to managing a task or case flow, including creating, changing, releasing, coding, billing, and finalizing. To reduce the process execution cost, we can eliminate redundancies and combine tasks where possible to streamline operations. Improving external quality can be achieved by reducing unnecessary steps and clarifying the path to complete activities, enhancing customer satisfaction and clarifying service delivery.
+
+**Improvements:**
+
+1. **Remove Redundancy and Simplify Finalization:** 
+   - The subprocess_3 currently suggests that the subprocess_1 (with `release` and `code_ok`) is optional. Making these activities mandatory by removing the xor could reduce confusion in task completion and ensure the activities are not skipped, leading to better quality.
+   - The subprocess_4 does not require fin to be optional when subprocess_3 is optional in itself. Making subprocess_4 linear enhances clarity and ensures completion.
+   
+2. **Enhance Billing Path for Clarity:**
+   - Currently, billing (subprocess_2) is presented as an optional activity upon the completion of subprocess_4. Making completion of billing activity mandatory enhances external quality, ensuring that any coded and released task gets billed appropriately.
+
+3. **Streamline Deletion Logic:**
+   - Simplifying the choice for deletion or process continuation by reducing unnecessary optional paths (subprocess_6), fostering clearer navigation and reducing the likelihood of unnecessary repetitions and thereby reducing execution cost.
+   
+**Proposed Improvements:**
+
+- Make subprocess_1 activities mandatory.
+- Make billing mandatory after subprocess_4.
+- Simplify subprocess_6, reducing optional paths for process clarity.
+
+These changes contribute to reducing process costs by eliminating optionality that could result in repeated steps or unclear completion and by refining process pathways for enhanced external quality.
+

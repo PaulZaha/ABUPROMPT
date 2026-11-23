@@ -1,0 +1,15 @@
+  
+
+To achieve the improvement goals of reducing process execution time and decreasing wrong treatments, I propose the following improvements to the process model:
+
+1. **Concurrent Execution of Lab Tests**: 
+   - Currently, leucocytes, CRP, and lacticacid are executed in a partial order, which implies concurrency already, but there is an optional lacticacid test handled in an exclusive XOR structure. Clarifying and ensuring these tests actually run in parallel can minimize waiting times and thus reduce the overall execution time. A concurrent model guarantees that no precedence waits are required among these tests, and they can use shared lab resources concurrently. 
+   
+2. **Streamlining Medication Administration**: 
+   - Combining IV Liquid and IV Antibiotics into a single subprocess where they are not optional and are executed in parallel ensures efficient treatment administration and avoids unnecessary delays. Since these treatments do not depend on each other, allowing them to be handled concurrently by medical staff can reduce process execution time and decrease the severity of wrong treatments due to waiting for one to complete before the other can be administered.
+   
+3. **Removing Optional Sepsis Procedures**:
+   - The XOR structure around subprocess_4 featuring optional execution may contribute to incorrect treatments, as skipping subprocess_4 could lead to missing critical steps. Therefore, streamlining the process by removing these optional patterns or clarifying when subprocess_4 is crucial can reduce misinterpretation and ensure correct treatment pathways are followed.
+
+These improvements directly address the goals by ensuring quicker and concurrent handling of tasks and eliminating optional structures that could lead to incorrect treatments.
+

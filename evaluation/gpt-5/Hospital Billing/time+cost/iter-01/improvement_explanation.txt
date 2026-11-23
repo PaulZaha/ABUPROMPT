@@ -1,0 +1,7 @@
+Key changes to reduce execution time and cost while keeping the process feasible and controlled:
+- Eliminate the do-nothing path after NEW: Removed the None branch from the top-level xor so every case is either explicitly canceled (DELETE) or processed. This avoids idle/limbo cases and follow-up work, reducing coordination cost and delays.
+- Make quality gate mandatory and parallelized: Replaced the optional RELEASE/CODE OK with a mandatory parallel pair. Running RELEASE and CODE OK in parallel shortens the critical path while ensuring needed checks are always done, reducing rework and denial costs.
+- Correct and parallelize the end stage: FIN and BILLED are now both required and run in parallel, but only after RELEASE and CODE OK complete. This preserves compliance while minimizing wait times at the tail of the process.
+- Consolidate diagnosis edits into an efficient, skippable loop: CHANGE DIAGN can be performed 0..n times before the quality gate using a skippable self-loop. This keeps corrections early (cheaper) and avoids restarts later, reducing both time and cost.
+- Flattened dependencies for clarity and correctness: A single partial order encodes the essential precedence constraints (diagnosis edits -> parallel RELEASE/CODE OK -> parallel FIN/BILLED), ensuring no hidden sequencing gaps and facilitating smoother execution.
+Overall impact: fewer exception cases, less rework, preserved concurrency on value-adding steps, and clear gating before billing/finalization. This shortens cycle time and reduces handling, rework, and coordination costs.

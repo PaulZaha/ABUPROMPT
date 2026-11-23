@@ -1,0 +1,7 @@
+ In the existing process model, one of the main contributors to falsely sent fines might be the activities stemming from inaccurate or incomplete information being used in the fine creation process. To address this, we propose adding a verification step immediately after the "Create Fine" activity to ensure that all data input for the fine creation is accurate and complete. Furthermore, the optionality of sending fines and notifications should be revised to prevent skipping checks or notifications unintentionally, which might lead to false fines being sent. Additionally, the process currently allows credit collection and payment activities to occur concurrently with previous subprocesses, which can lead to misalignment in information about fines that need to be sent or collected. Implementing a verification step and ensuring proper sequencing will assist in reducing errors leading to falsely sent fines.
+
+To implement these improvements:
+1. Introduce a new activity "Verify Fine Data" immediately following "Create Fine".
+2. Remove optionality from the subprocess handling sending fines and notifications to ensure these steps are performed.
+3. Ensure that credit collection and payment-related activities do not begin until the verification and notification subprocesses are completed.
+By addressing these points, we aim to eliminate potential errors in the flow that could result in false fines being issued. 

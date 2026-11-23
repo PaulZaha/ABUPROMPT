@@ -1,0 +1,12 @@
+Key issues in the original model and targeted improvements:
+- Original bottleneck: The model forces labs (Leucocytes/CRP/LacticAcid) to complete before IV therapy due to subprocess_2 -> subprocess_3, slowing time to treatment. LacticAcid is optional and the entire diagnostic/treatment block can be skipped without an explicit decision, increasing risk of missing necessary care or giving unnecessary treatments.
+- Introduce an explicit decision after ER Sepsis Triage: An xor splits into a sepsis-suspected branch or skip, ensuring treatments are only executed when clinically indicated (reduces wrong treatments for non-septic patients) while making the subsequent steps mandatory in the positive branch.
+- Activate Sepsis Protocol: A dedicated activity gates the bundle and standardizes actions. This supports correct, consistent execution and reduces ordering friction and mistakes.
+- Parallelize critical steps to reduce time: After protocol activation, draw labs (Leucocytes and LacticAcid) and start IV fluids concurrently. IV antibiotics no longer wait for IV fluids; they start as soon as an Allergy Check is completed. This removes unnecessary sequential waits, cutting time to therapy.
+- Make LacticAcid mandatory in the sepsis branch: This eliminates the optionality that could lead to missed severity assessment and wrong downstream treatment intensity.
+- Make CRP optional: CRP is not essential for immediate resuscitation and often delays without changing the first-hour actions; making it optional reduces cycle time while still allowing it when useful.
+- Flatten the structure within the sepsis branch: A single partial order with explicit edges avoids nested partial orders that can obscure or constrain concurrency, ensuring maximum parallel execution where safe.
+
+How the changes achieve goals:
+- Reduce process execution time: Concurrency of IV fluids with lab collection; removal of the fluids-before-antibiotics dependency; immediate antibiotics after a quick Allergy Check; optional CRP avoids unnecessary delay. These reduce the critical path length to treatment.
+- Decrease wrong treatments: Explicit decision after sepsis triage confines treatment to appropriate cases; mandatory LacticAcid improves assessment accuracy; an Antibiotics Allergy Check before IV Antibiotics reduces adverse reactions and incorrect antibiotic administration; a standardized Sepsis Protocol reduces variability and errors.

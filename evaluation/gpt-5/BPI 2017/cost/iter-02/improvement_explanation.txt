@@ -1,0 +1,12 @@
+Key cost drivers in the original model were unbounded manual rework loops and repeated finalize/cancel cycles. The redesign targets those cost leakages while preserving essential control logic and feasibility.
+
+What I changed and why it reduces cost:
+- Removed unbounded loops: Replaced unlimited self-loops on W_Handle leads, W_Complete application, and W_Call after offers with bounded/optional structures. Specifically:
+  - W_Handle leads and W_Complete application are capped to at most one rework (i.e., either once or twice) via an xor between a single execution and a two-pass sequence. This cuts excessive manual labor while retaining one rework for quality.
+  - Follow-up call(s) after offers are reduced to a single optional call (no repeated call loop). This avoids sustained outreach costs while allowing one targeted nudge when beneficial.
+- Made the end-state unique: Eliminated the loop that allowed multiple occurrences of A_Complete/A_Cancelled. Now there is a single decisive xor between an approval path and a cancellation path, ensuring the case closes exactly once and eliminating redundant closing activities.
+- Mandated submission before downstream work: A_Submitted is made mandatory (not skippable). This reduces downstream correction and rework costs by ensuring we only progress qualified/complete cases.
+- Preserved value-adding optionality: A_Concept remains optional to avoid unnecessary work when a concept is not needed.
+- Proper gating to avoid waste: Offer creation is kept strictly after A_Accepted, preventing offer work for unaccepted cases, which directly reduces execution cost.
+
+Expected impact: By capping rework, removing repeated finalize/cancel loops, and avoiding offer work for unaccepted cases, the design meaningfully reduces manual effort and associated handling costs while keeping one rework cycle and a single optional follow-up for conversion.

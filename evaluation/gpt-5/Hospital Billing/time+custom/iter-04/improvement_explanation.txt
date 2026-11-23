@@ -1,0 +1,15 @@
+Key issues identified: (1) RELEASE could occur before CODE OK due to concurrency, causing rework and external quality problems; (2) BILLED was optional, leading to inconsistent customer billing and delayed revenue; (3) FIN was concurrent with earlier steps, risking premature closure; (4) The path after NEW allowed a complete skip, leaving cases in limbo; and (5) nested partial orders made dependencies harder to reason about.
+
+Improvements implemented:
+- Introduced a mandatory quality gate: CODE OK must precede RELEASE and BILLED. This prevents incorrect releases, improving external quality and reducing downstream rework time.
+- Added a self-loop on CODE OK (loop(code_ok, None)) to allow rapid revalidation/rework in-place when needed, shrinking correction cycles without sending the case backward through the process.
+- Made BILLED mandatory after RELEASE to ensure timely, consistent billing and better customer-facing outcomes.
+- Moved FIN to the very end, after BILLED, to avoid premature closure and ensure all customer-facing work is complete.
+- Removed the "skip everything" option after NEW; now the case must either be deleted or processed, preventing limbo states and reducing coordination and follow-up delays.
+- Flattened the structure: the main path is a single partial order sequence inside an XOR with DELETE, avoiding nested partial orders and clarifying dependencies for smoother execution.
+
+How this achieves the goals:
+- Reduced execution time: Eliminating post-release rework (by enforcing CODE OK before RELEASE) and enabling fast in-place corrections via the self-loop reduces average cycle time. Mandatory billing right after release prevents delays and separate follow-up steps.
+- Improved external quality: Customers only see correctly coded releases, and billing is consistent and timely. Finalization occurs after all customer-facing work, avoiding errors caused by premature closure.
+
+These changes are feasible operationally: the CODE OK gate and its quick revalidation loop reflect existing quality practices; billing is required for processed (non-deleted) cases; and DELETE remains available for cancellations.

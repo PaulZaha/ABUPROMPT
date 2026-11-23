@@ -1,0 +1,12 @@
+Targeted improvements to reduce end-to-end execution time:
+- Decoupled CHANGE DIAGN from FIN: Previously, FIN and the optional RELEASE/CODE OK block were forced to wait for CHANGE DIAGN (edge subprocess_0 -> subprocess_4). We removed this gating so FIN can proceed in parallel with diagnosis changes. This shortens the critical path by eliminating unnecessary waiting for FIN when diagnosis work takes longer.
+- Preserved quality and billing controls: To ensure correctness, CODE OK and BILLED still depend on the final diagnosis. We explicitly require CODE OK and BILLED to occur after CHANGE DIAGN (if executed). This keeps quality intact while enabling earlier parallel work.
+- Made RELEASE and CODE OK independently optional: Instead of an all-or-nothing optional block, each can now be skipped or executed independently. This prevents needless waiting for a task that isn’t required and reduces cycle time when only one of the two is necessary.
+- Flattened nested partial orders: Eliminated a partial order as a child of another partial order by modeling concurrency and dependencies directly in a single partial order. This avoids inadvertent serialization and makes concurrency explicit and engine-friendly.
+
+Effect on cycle time:
+- The critical path to BILLED becomes max(FIN, CHANGE DIAGN + max(optional RELEASE, optional CODE OK)) rather than CHANGE DIAGN + max(FIN, optional group), reducing waiting and enabling more overlap of work. If RELEASE/CODE OK are skipped, billing can occur after max(FIN, CHANGE DIAGN), which is strictly faster than the original sequencing.
+
+Assumptions for feasibility:
+- FIN is administrative/finalization work that can progress in parallel with diagnosis changes without risking downstream correctness, provided billing and quality checks (CODE OK) still wait for the final diagnosis.
+- RELEASE and CODE OK are operationally independent decisions; running only the needed one is acceptable. If both are needed, they still run concurrently.
